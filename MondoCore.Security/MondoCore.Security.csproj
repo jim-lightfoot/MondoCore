@@ -4,12 +4,14 @@
     <TargetFramework>netstandard2.0</TargetFramework>
     <UserSecretsId>071af6f3-0a94-46fc-8dbb-d3bd34e17902</UserSecretsId>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Copyright>Jim Lightfoot</Copyright>
+    <Copyright>© Jim Lightfoot, All Rights Reserved</Copyright>
     <RepositoryUrl>https://github.com/jim-lightfoot/MondoCore</RepositoryUrl>
     <Authors>Jim Lightfoot</Authors>
     <Product>MondoCore</Product>
     <Company>MondoCore</Company>
     <Description>Contains classes for Encryption, Password hashing and TOTP</Description>
+    <RepositoryType>git</RepositoryType>
+    <PackageLicenseFile>LICENSE</PackageLicenseFile>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -22,6 +24,13 @@
 
   <ItemGroup>
     <ProjectReference Include="..\MondoCore.Common\MondoCore.Common.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="..\LICENSE">
+      <Pack>True</Pack>
+      <PackagePath></PackagePath>
+    </None>
   </ItemGroup>
 
 </Project>
