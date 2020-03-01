@@ -1,18 +1,27 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Copyright>Jim Lightfoot</Copyright>
+    <Copyright>© Jim Lightfoot, All Rights Reserved</Copyright>
     <Company>MondoCore</Company>
     <Product>MondoCore</Product>
     <Authors>Jim Lightfoot</Authors>
     <RepositoryUrl>https://github.com/jim-lightfoot/MondoCore</RepositoryUrl>
     <Description>Common classes used by other MondoCore libraries</Description>
+    <RepositoryType>git</RepositoryType>
+    <PackageLicenseFile>LICENSE</PackageLicenseFile>
   </PropertyGroup>
 
   <ItemGroup>
     <Folder Include="Properties\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="..\LICENSE">
+      <Pack>True</Pack>
+      <PackagePath></PackagePath>
+    </None>
   </ItemGroup>
 
 </Project>
