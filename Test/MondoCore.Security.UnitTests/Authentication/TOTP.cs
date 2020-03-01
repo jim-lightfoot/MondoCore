@@ -13,6 +13,7 @@ using Moq;
 namespace MondoCore.Security.Authentication.UnitTests
 {
     [TestClass]
+    [TestCategory("Unit Tests")]
     public class TOTPTests
     {
         [TestMethod]

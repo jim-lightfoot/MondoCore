@@ -23,7 +23,13 @@ namespace MondoCore.Security.Passwords
         public IList<char>   InvalidChars   { get; } = new List<char>   {};
 
         /****************************************************************************/
-        public bool IsValid(string password, params string[] additionalInvalidWords )
+        /// <summary>
+        /// Determines is the given (user entered) password meets the policy
+        /// </summary>
+        /// <param name="password">User entered password to checj</param>
+        /// <param name="additionalInvalidWords">Additional invalid words to check, e.g. this might include your org name, product name, words in a different language, etc</param>
+        /// <returns></returns>
+        public bool IsValid(string password, params string[] additionalInvalidWords)
         {
             if(string.IsNullOrWhiteSpace(password))
                 return false;
@@ -102,6 +108,8 @@ namespace MondoCore.Security.Passwords
             return true;
         }
 
+        #region Private
+
         /****************************************************************************/
         private static readonly List<(string, string)> _charSubstitutions = new List<(string, string)>
         {
@@ -135,5 +143,7 @@ namespace MondoCore.Security.Passwords
             "4321",
             "3210"
         };
+
+        #endregion
     }
 }

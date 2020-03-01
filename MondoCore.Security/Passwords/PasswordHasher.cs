@@ -23,16 +23,25 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Security.Cryptography;
 
+
 namespace MondoCore.Security.Passwords
 {
     /****************************************************************************/
     /****************************************************************************/
+    /// <summary>
+    /// Uses the PBKDF2 algorithm to generate a password hash
+    /// </summary>
     public class PasswordHasher : IPasswordHasher
     {
         private readonly int _numIterations;
         private readonly int _hashSize;
 
         /****************************************************************************/
+        /// <summary>
+        /// Initialized a new PBKDF2 based password hasher
+        /// </summary>
+        /// <param name="numIterations">Number of iterations to hash. Minimum is 5000. See https://en.wikipedia.org/wiki/PBKDF2 for hash iteration recommendations</param>
+        /// <param name="hashSize">The size of the hash. Default is 128</param>
         public PasswordHasher(int numIterations, int hashSize = 128)
         {
             if(numIterations < 5000)
@@ -43,7 +52,13 @@ namespace MondoCore.Security.Passwords
         }
 
         /****************************************************************************/
-        public byte[] Hash(byte[] password, byte[] salt, byte[] authenticator)
+        /// <summary>
+        /// Hash the password using the given salt
+        /// </summary>
+        /// <param name="password">Password to hash</param>
+        /// <param name="salt">The salt must be unique to each password</param>
+        /// <returns>The hash of the password</returns>
+        public byte[] Hash(byte[] password, byte[] salt)
         {
             using(Rfc2898DeriveBytes hasher = new Rfc2898DeriveBytes(password, salt, _numIterations))
             {
@@ -52,12 +67,22 @@ namespace MondoCore.Security.Passwords
         }
 
         /****************************************************************************/
+        /// <summary>
+        /// Generates a new salt
+        /// </summary>
+        /// <param name="size">The size of the salt to generate</param>
+        /// <returns>A new salt</returns>
         public byte[] GenerateSalt(int size)
         {
             return CreateSalt(size);
         }
 
         /****************************************************************************/
+        /// <summary>
+        /// Generates a new salt
+        /// </summary>
+        /// <param name="size">The size of the salt to generate</param>
+        /// <returns>A new salt</returns>
         public static byte[] CreateSalt(int size)
         {
             using(var crypto = new RNGCryptoServiceProvider())
