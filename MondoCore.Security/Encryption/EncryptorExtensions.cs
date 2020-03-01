@@ -105,24 +105,5 @@ namespace MondoCore.Security.Encryption
 
             return (chDecrypted, iLength);
         }
-
-        #region Private Methods
-
-        /****************************************************************************/
-        unsafe private static SecureString ToSecureString(char[] aChars, int iLength)
-        {
-            SecureString str;
-
-            fixed(char* pChars = aChars)
-            {
-                str = new SecureString(pChars, iLength);
-            }
-
-            str.MakeReadOnly();
-
-            return(str);
-        }
-
-        #endregion
     }
 }
