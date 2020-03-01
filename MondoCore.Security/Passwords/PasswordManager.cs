@@ -30,6 +30,9 @@ namespace MondoCore.Security.Passwords
 {
     /****************************************************************************/
     /****************************************************************************/
+    /// <summary>
+    /// Manages passwords
+    /// </summary>
     public class PasswordManager : IPasswordManager
     {
         private readonly IPasswordHasher _passwordHasher;
@@ -50,6 +53,12 @@ namespace MondoCore.Security.Passwords
         }
 
         /****************************************************************************/
+        /// <summary>
+        /// Given an unhashed password and the owner (user) id returns a Password object
+        /// </summary>
+        /// <param name="password">The password typed in by the user</param>
+        /// <param name="owner">An owner or user id. This could be a guid from a NoSql database or an identity column value (INT or BIGINT) from a SQL database</param>
+        /// <returns>A Password object. Be sure to Dispose of this object as soon as not longer needed</returns>
         public Password FromOwner(string password, IPasswordOwner owner)
         {
             var unhashed = Encoding.UTF8.GetBytes(password);
@@ -62,6 +71,11 @@ namespace MondoCore.Security.Passwords
         }
 
         /****************************************************************************/
+        /// <summary>
+        /// Generates a new password with random characters. Usually for temporary purposes.
+        /// </summary>
+        /// <param name="length">The length of the password. Ideally should be at least 8</param>
+        /// <returns>A new random password</returns>
         public string GenerateNew(int length)
         {
             const string validChars     = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890!@#$%^&*()_+-={}[]:<>?,./~";
@@ -79,6 +93,11 @@ namespace MondoCore.Security.Passwords
         }        
 
         /****************************************************************************/
+        /// <summary>
+        /// Loads the hashed password associated with the owner/user
+        /// </summary>
+        /// <param name="owner">Owner or user of the password</param>
+        /// <returns>A Password object containing the hashed password</returns>
         public async Task<Password> Load(IPasswordOwner owner)
         {
             var pwd             = await _passwordStore.Get(owner, out byte[] salt);
@@ -92,6 +111,10 @@ namespace MondoCore.Security.Passwords
         }
 
         /****************************************************************************/
+        /// <summary>
+        /// Saves the password to the password store
+        /// </summary>
+        /// <param name="password">The password to save</param>
         public async Task Save(Password password)
         {
             var encryptedSalt = await _encryptor.Encrypt(password.Salt);

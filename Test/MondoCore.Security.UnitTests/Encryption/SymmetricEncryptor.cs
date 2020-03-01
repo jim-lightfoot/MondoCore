@@ -9,6 +9,7 @@ using MondoCore.Security.Encryption;
 namespace MondoCore.Security.Encryption.UnitTests
 {
     [TestClass]
+    [TestCategory("Unit Tests")]
     public class SymmetricEncryptorTests
     {
         private const string data = "This once recognized, our attention naturally turns to the question of how small the payment can be. We know that by means of a wheel and axle we can raise 1,000 kilogrammes through 1 metre by allowing 100 kilogrammes to fall 10 metres.";

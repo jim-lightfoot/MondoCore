@@ -12,6 +12,7 @@ using Moq;
 namespace MondoCore.Security.Passwords.UnitTests
 {
     [TestClass]
+    [TestCategory("Unit Tests")]
     public class PasswordTests
     {
         [TestMethod]
