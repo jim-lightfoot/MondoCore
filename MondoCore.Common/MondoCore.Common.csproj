@@ -1,7 +1,14 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <Copyright>Jim Lightfoot</Copyright>
+    <Company>MondoCore</Company>
+    <Product>MondoCore</Product>
+    <Authors>Jim Lightfoot</Authors>
+    <RepositoryUrl>https://github.com/jim-lightfoot/MondoCore</RepositoryUrl>
+    <Description>Common classes used by other MondoCore libraries</Description>
   </PropertyGroup>
 
   <ItemGroup>
