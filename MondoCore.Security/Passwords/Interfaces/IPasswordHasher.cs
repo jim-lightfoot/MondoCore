@@ -27,7 +27,7 @@ namespace MondoCore.Security.Passwords
     /****************************************************************************/
     public interface IPasswordHasher
     {
-        byte[] Hash(byte[] password, byte[] salt, byte[] authenticator);
+        byte[] Hash(byte[] password, byte[] salt);
         byte[] GenerateSalt(int size);
     }
 }

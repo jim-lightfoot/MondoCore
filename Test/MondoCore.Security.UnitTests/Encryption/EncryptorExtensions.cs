@@ -8,6 +8,7 @@ using MondoCore.Security.Encryption;
 namespace MondoCore.Security.Encryption.UnitTests
 {
     [TestClass]
+    [TestCategory("Unit Tests")]
     public class EncryptorExtensionsTests
     {
         private const string DataToEncrypt1 = "Bob's your uncle";

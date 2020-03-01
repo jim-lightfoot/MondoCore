@@ -15,6 +15,7 @@ using Moq;
 namespace MondoCore.Security.Encryption.UnitTests
 {
     [TestClass]
+    [TestCategory("Unit Tests")]
     public class KeyStoreTests
     {
         [TestMethod]
