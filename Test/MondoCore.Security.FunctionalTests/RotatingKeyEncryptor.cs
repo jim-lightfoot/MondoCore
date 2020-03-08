@@ -92,7 +92,7 @@ namespace MondoCore.Security.FunctionalTests
                                                 new EncryptionPolicy(), 
                                                 new TimeSpan(1, 0, 0));
 
-            return new RotatingKeyEncryptor(new SymmetricEncryptorFactory(encryptorCache, keyFactory));
+            return new RotatingKeyEncryptor(new RotatingEncryptorFactory(new SymmetricEncryptorFactory(), encryptorCache, keyFactory));
         }
     }
 }

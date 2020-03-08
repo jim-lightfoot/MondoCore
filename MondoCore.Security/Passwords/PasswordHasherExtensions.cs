@@ -1,4 +1,23 @@
-﻿using System;
+﻿/***************************************************************************
+ *                                                                          
+ *    The MondoCore Libraries  							                    
+ *                                                                          
+ *        Namespace: MondoCore.Security.Passwords				            
+ *             File: PasswordHasherExtensions.cs			 		    		        
+ *        Class(es): PasswordHasherExtensions				           	            
+ *          Purpose: Extension methods for hashing passwords                        
+ *                                                                          
+ *  Original Author: Jim Lightfoot                                          
+ *    Creation Date: 2 Feb 2020                                             
+ *                                                                          
+ *   Copyright (c) 2020 - Jim Lightfoot, All rights reserved                
+ *                                                                          
+ *  Licensed under the MIT license:                                         
+ *    http://www.opensource.org/licenses/mit-license.php                    
+ *                                                                          
+ ****************************************************************************/
+
+using System;
 using System.Collections.Generic;
 using System.Text;
 

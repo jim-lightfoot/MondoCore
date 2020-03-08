@@ -1,21 +1,21 @@
-﻿/****************************************************************************/
-/*                                                                          */
-/*    The MondoCore Libraries  	                                            */
-/*                                                                          */
-/*      Namespace: MondoCore.Common	                                        */
-/*           File: CacheExtensions.cs                                       */
-/*      Class(es): CacheExtensions                                          */
-/*        Purpose: Extension methods for ICache                             */
-/*                                                                          */
-/*  Original Author: Jim Lightfoot                                          */
-/*    Creation Date: 29 Nov 2015                                            */
-/*                                                                          */
-/*   Copyright (c) 2015-2020 - Jim Lightfoot, All rights reserved           */
-/*                                                                          */
-/*  Licensed under the MIT license:                                         */
-/*    http://www.opensource.org/licenses/mit-license.php                    */
-/*                                                                          */
-/****************************************************************************/
+﻿/***************************************************************************
+ *                                                                          
+ *    The MondoCore Libraries  	                                            
+ *                                                                          
+ *      Namespace: MondoCore.Common	                                        
+ *           File: CacheExtensions.cs                                       
+ *      Class(es): CacheExtensions                                          
+ *        Purpose: Extension methods for ICache                             
+ *                                                                          
+ *  Original Author: Jim Lightfoot                                          
+ *    Creation Date: 29 Nov 2015                                            
+ *                                                                          
+ *   Copyright (c) 2015-2020 - Jim Lightfoot, All rights reserved           
+ *                                                                          
+ *  Licensed under the MIT license:                                         
+ *    http://www.opensource.org/licenses/mit-license.php                    
+ *                                                                          
+ ****************************************************************************/
 
 using System;
 using System.Threading.Tasks;

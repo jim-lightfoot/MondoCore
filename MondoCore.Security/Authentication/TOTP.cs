@@ -1,11 +1,26 @@
-﻿using System;
+﻿/***************************************************************************
+ *                                                                          
+ *    The MondoCore Libraries  						                        
+ *                                                                          
+ *        Namespace: MondoCore.Security.Authentication				            
+ *             File: TOTP.cs							
+ *        Class(es): TOTP							    
+ *          Purpose: time-based one-time passwords (TOTP)               
+ *                                                                          
+ *  Original Author: Jim Lightfoot                                          
+ *    Creation Date: 14 Jan 2020                                            
+ *                                                                          
+ *   Copyright (c) 2020 - Jim Lightfoot, All rights reserved                
+ *                                                                          
+ *  Licensed under the MIT license:                                         
+ *    http://www.opensource.org/licenses/mit-license.php                    
+ *                                                                          
+ ****************************************************************************/
+
+using System;
 using System.Linq;
 using System.Security.Cryptography;
-using System.Text;
-using System.Threading.Tasks;
 
-using MondoCore.Common;
-using MondoCore.Security.Encryption;
 using MondoCore.Security.Passwords;
 
 namespace MondoCore.Security.Authentication

@@ -1,21 +1,21 @@
-﻿/****************************************************************************/
-/*                                                                          */
-/*    The MondoCore Libraries  							                    */
-/*                                                                          */
-/*        Namespace: MondoCore.Security.Encryption				            */
-/*             File: EncryptionPolicy.cs					    		    */
-/*        Class(es): EncryptionPolicy				         		        */
-/*          Purpose: An encryption policy is used to specify an encr. key   */
-/*                                                                          */
-/*  Original Author: Jim Lightfoot                                          */
-/*    Creation Date: 19 Jan 2020                                            */
-/*                                                                          */
-/*   Copyright (c) 2020 - Jim Lightfoot, All rights reserved                */
-/*                                                                          */
-/*  Licensed under the MIT license:                                         */
-/*    http://www.opensource.org/licenses/mit-license.php                    */
-/*                                                                          */
-/****************************************************************************/
+﻿/***************************************************************************
+ *                                                                          
+ *    The MondoCore Libraries  							                    
+ *                                                                          
+ *        Namespace: MondoCore.Security.Encryption				            
+ *             File: EncryptionPolicy.cs					    		    
+ *        Class(es): EncryptionPolicy				         		        
+ *          Purpose: An encryption policy is used to specify an encr. key   
+ *                                                                          
+ *  Original Author: Jim Lightfoot                                          
+ *    Creation Date: 19 Jan 2020                                            
+ *                                                                          
+ *   Copyright (c) 2020 - Jim Lightfoot, All rights reserved                
+ *                                                                          
+ *  Licensed under the MIT license:                                         
+ *    http://www.opensource.org/licenses/mit-license.php                    
+ *                                                                          
+ ****************************************************************************/
 
 using System;
 

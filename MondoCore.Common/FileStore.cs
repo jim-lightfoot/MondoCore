@@ -1,21 +1,21 @@
-﻿/****************************************************************************/
-/*                                                                          */
-/*    The MondoCore Libraries  							                    */
-/*                                                                          */
-/*        Namespace: MondoCore.Common							            */
-/*             File: FileStore.cs					    		            */
-/*        Class(es): FileStore				         		                */
-/*          Purpose: IBlobStore wrapper for file system                     */
-/*                                                                          */
-/*  Original Author: Jim Lightfoot                                          */
-/*    Creation Date: 20 Jan 2020                                            */
-/*                                                                          */
-/*   Copyright (c) 2020 - Jim Lightfoot, All rights reserved                */
-/*                                                                          */
-/*  Licensed under the MIT license:                                         */
-/*    http://www.opensource.org/licenses/mit-license.php                    */
-/*                                                                          */
-/****************************************************************************/
+﻿/***************************************************************************
+ *                                                                          
+ *    The MondoCore Libraries  							                    
+ *                                                                          
+ *        Namespace: MondoCore.Common							            
+ *             File: FileStore.cs					    		            
+ *        Class(es): FileStore				         		                
+ *          Purpose: IBlobStore wrapper for file system                     
+ *                                                                          
+ *  Original Author: Jim Lightfoot                                          
+ *    Creation Date: 20 Jan 2020                                            
+ *                                                                          
+ *   Copyright (c) 2020 - Jim Lightfoot, All rights reserved                
+ *                                                                          
+ *  Licensed under the MIT license:                                         
+ *    http://www.opensource.org/licenses/mit-license.php                    
+ *                                                                          
+ ****************************************************************************/
 
 using System;
 using System.Collections.Generic;
@@ -138,6 +138,11 @@ namespace MondoCore.Common
         #endregion
 
         /****************************************************************************/
+        /// <summary>
+        /// Ensures the full path of the given filename exists by creating it if does no exist
+        /// </summary>
+        /// <param name="fileName">A full path name of a file</param>
+        /// <returns>Returns true if the path was created or false if it was already there</returns>
         public static bool EnsurePathExists(string fileName)
         {
             var destFile = new FileInfo(fileName);

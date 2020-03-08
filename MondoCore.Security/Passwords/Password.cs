@@ -1,21 +1,21 @@
-﻿/****************************************************************************/
-/*                                                                          */
-/*    The MondoCore Libraries  							                    */
-/*                                                                          */
-/*        Namespace: MondoCore.Security.Password  					        */
-/*             File: Password.cs					    		            */
-/*        Class(es): Password				         		                */
-/*          Purpose: Provides a password                                    */
-/*                                                                          */
-/*  Original Author: Jim Lightfoot                                          */
-/*    Creation Date: 1 Jan 2020                                             */
-/*                                                                          */
-/*   Copyright (c) 2020 - Jim Lightfoot, All rights reserved                */
-/*                                                                          */
-/*  Licensed under the MIT license:                                         */
-/*    http://www.opensource.org/licenses/mit-license.php                    */
-/*                                                                          */
-/****************************************************************************/
+﻿/************************************************************************** 
+ *                                                                          
+ *    The MondoCore Libraries  							                    
+ *                                                                          
+ *        Namespace: MondoCore.Security.Password  					        
+ *             File: Password.cs					    		            
+ *        Class(es): Password				         		                
+ *          Purpose: Provides a password                                    
+ *                                                                          
+ *  Original Author: Jim Lightfoot                                          
+ *    Creation Date: 1 Jan 2020                                             
+ *                                                                          
+ *   Copyright (c) 2020 - Jim Lightfoot, All rights reserved                
+ *                                                                          
+ *  Licensed under the MIT license:                                         
+ *    http://www.opensource.org/licenses/mit-license.php                    
+ *                                                                          
+ ****************************************************************************/
 
 using System;
 using System.Text;
