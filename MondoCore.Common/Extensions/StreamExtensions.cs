@@ -1,4 +1,23 @@
-﻿using System;
+﻿/*************************************************************************** 
+ *                                                                           
+ *    The MondoCore Libraries  							                     
+ *                                                                           
+ *        Namespace: MondoCore.Common							             
+ *             File: StreamExtensions.cs					    		         
+ *        Class(es): StreamExtensions				         		             
+ *          Purpose: Extensions for Streams                  
+ *                                                                           
+ *  Original Author: Jim Lightfoot                                           
+ *    Creation Date: 1 Jan 2020                                              
+ *                                                                           
+ *   Copyright (c) 2005-2020 - Jim Lightfoot, All rights reserved            
+ *                                                                           
+ *  Licensed under the MIT license:                                          
+ *    http://www.opensource.org/licenses/mit-license.php                     
+ *                                                                           
+ ****************************************************************************/
+
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
@@ -11,6 +30,12 @@ namespace MondoCore.Common
     public static class StreamExtensions
     {
         /****************************************************************************/
+        /// <summary>
+        /// Reads in from string and converts into a string
+        /// </summary>
+        /// <param name="stream">Stream to read from</param>
+        /// <param name="encoder">Text encoder. Will default to UTFEncoding</param>
+        /// <returns>The resulting string</returns>
         public static async Task<string> ReadStringAsync(this Stream stream, Encoding encoder = null)
         {
             if(encoder == null)
@@ -36,6 +61,13 @@ namespace MondoCore.Common
         }
 
         /****************************************************************************/
+        /// <summary>
+        /// Write a string to the stream
+        /// </summary>
+        /// <param name="stream">The stream to write to</param>
+        /// <param name="data"></param>
+        /// <param name="encoder">Text encoder. Will default to UTFEncoding</param>
+        /// <returns></returns>
         public static Task WriteAsync(this Stream stream, string data, Encoding encoder = null)
         {
             if(encoder == null)
@@ -47,6 +79,11 @@ namespace MondoCore.Common
         }
 
         /****************************************************************************/
+        /// <summary>
+        /// Write one stream to another
+        /// </summary>
+        /// <param name="dest">The stream to write to</param>
+        /// <param name="src">The stream to read from</param>
         public static async Task WriteAsync(this Stream dest, Stream src)
         {
             const int BufferSize  = 65536;

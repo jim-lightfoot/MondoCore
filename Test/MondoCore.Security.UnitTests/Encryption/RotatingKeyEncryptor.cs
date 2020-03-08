@@ -25,7 +25,7 @@ namespace MondoCore.Security.Encryption.UnitTests
         public async Task RotatingKeyEncryptor_EncryptDecrypt_bytes()
         {
             var encr1   = new SymmetricEncryptor(new Key(new EncryptionPolicy()));
-            var factory = new Mock<IEncryptorFactory>();
+            var factory = new Mock<IRotatingEncryptorFactory>();
             var encr    = new RotatingKeyEncryptor(factory.Object);
 
             factory.Setup( (f)=> f.GetValidForEncryption() ).ReturnsAsync(encr1);
@@ -41,7 +41,7 @@ namespace MondoCore.Security.Encryption.UnitTests
         public async Task RotatingKeyEncryptor_EncryptDecrypt_stream()
         {
             var encr1   = new SymmetricEncryptor(new Key(new EncryptionPolicy()));
-            var factory = new Mock<IEncryptorFactory>();
+            var factory = new Mock<IRotatingEncryptorFactory>();
             var encr    = new RotatingKeyEncryptor(factory.Object);
 
             factory.Setup( (f)=> f.GetValidForEncryption() ).ReturnsAsync(encr1);

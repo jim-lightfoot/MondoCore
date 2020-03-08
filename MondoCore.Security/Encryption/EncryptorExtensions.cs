@@ -1,20 +1,20 @@
-﻿/****************************************************************************/
-/*                                                                          */
-/*    The MondoCore Libraries  							                    */
-/*                                                                          */
-/*        Namespace: MondoCore.Security.Encryption				            */
-/*             File: EncryptorExtensions.cs					                */
-/*        Class(es): EncryptorExtensions				                    */
-/*          Purpose: Extension methods for IEncryptor                       */
-/*                                                                          */
-/*  Original Author: Jim Lightfoot                                          */
-/*    Creation Date: 19 Jan 2020                                            */
-/*                                                                          */
-/*   Copyright (c) 2020 - Jim Lightfoot, All rights reserved                */
-/*                                                                          */
-/*  Licensed under the MIT license:                                         */
-/*    http://www.opensource.org/licenses/mit-license.php                    */
-/*                                                                          */
+﻿/***************************************************************************
+ *                                                                          
+ *    The MondoCore Libraries  							                    
+ *                                                                          
+ *        Namespace: MondoCore.Security.Encryption				            
+ *             File: EncryptorExtensions.cs					                
+ *        Class(es): EncryptorExtensions				                    
+ *          Purpose: Extension methods for IEncryptor                       
+ *                                                                          
+ *  Original Author: Jim Lightfoot                                          
+ *    Creation Date: 19 Jan 2020                                            
+ *                                                                          
+ *   Copyright (c) 2020 - Jim Lightfoot, All rights reserved                
+ *                                                                          
+ *  Licensed under the MIT license:                                         
+ *    http://www.opensource.org/licenses/mit-license.php                    
+ *                                                                          
 /****************************************************************************/
 
 using System;

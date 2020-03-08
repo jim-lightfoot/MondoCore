@@ -13,14 +13,14 @@ namespace MondoCore.Security.Encryption.UnitTests
 {
     [TestClass]
     [TestCategory("Unit Tests")]
-    public class SymmetricEncryptorFactoryTests
+    public class RotatingEncryptorFactoryTests
     {
         [TestMethod]
-        public async Task SymmetricEncryptorFactory_GetValidForDecryption()
+        public async Task RotatingEncryptorFactory_GetValidForDecryption()
         {
             var keyFactory    = new Mock<IKeyFactory>();
             var cache         = new Mock<ICache>();
-            var encrFactory   = new SymmetricEncryptorFactory(cache.Object, keyFactory.Object);
+            var encrFactory   = new RotatingEncryptorFactory(new SymmetricEncryptorFactory(), cache.Object, keyFactory.Object);
             var policy        = new EncryptionPolicy();
             var idPolicy      = policy.Id;
             var key           = new Key(policy);
@@ -33,11 +33,11 @@ namespace MondoCore.Security.Encryption.UnitTests
         }
 
         [TestMethod]
-        public async Task SymmetricEncryptorFactory_GetValidForEncryption()
+        public async Task RotatingEncryptorFactory_GetValidForEncryption()
         {
             var keyFactory    = new Mock<IKeyFactory>();
             var cache         = new Mock<ICache>();
-            var encrFactory   = new SymmetricEncryptorFactory(cache.Object, keyFactory.Object);
+            var encrFactory   = new RotatingEncryptorFactory(new SymmetricEncryptorFactory(), cache.Object, keyFactory.Object);
             var policy        = new EncryptionPolicy();
             var idPolicy      = policy.Id;
             var key           = new Key(policy);
@@ -47,7 +47,7 @@ namespace MondoCore.Security.Encryption.UnitTests
             var result = await encrFactory.GetValidForEncryption();
 
             Assert.IsNotNull(result);
-            Assert.AreEqual(key.Id, (result as SymmetricEncryptor).Key.Id);
+            Assert.AreEqual(key.Id, (result as IEncryptor).Policy.Id);
         }
     }
 }
