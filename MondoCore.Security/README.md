@@ -42,7 +42,7 @@ public static IEncryptor CreateEncryptor(IBlobStore encryptStore,
                                     new EncryptionPolicy(), 
                                     new TimeSpan(90, 0, 0, 0)); // Expires after 90 days
 
-    return new RotatingKeyEncryptor(new SymmetricEncryptorFactory(encryptorCache, keyFactory));
+    return new RotatingKeyEncryptor(new RotatingEncryptorFactory(new SymmetricEncryptorFactory(), encryptorCache, keyFactory));
 }
 ```
 
