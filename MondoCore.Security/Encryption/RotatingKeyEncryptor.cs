@@ -1,21 +1,21 @@
-﻿/****************************************************************************/
-/*                                                                          */
-/*    The MondoCore Libraries  						                        */
-/*                                                                          */
-/*        Namespace: MondoCore.Security.Encryption					        */
-/*             File: RotatingKeyEncryptor.cs								*/
-/*        Class(es): RotatingKeyEncryptor								    */
-/*          Purpose: An encryptor that encrypts rotates keys                */
-/*                                                                          */
-/*  Original Author: Jim Lightfoot                                          */
-/*    Creation Date: 11 Jan 2020                                            */
-/*                                                                          */
-/*   Copyright (c) 2020 - Jim Lightfoot, All rights reserved                */
-/*                                                                          */
-/*  Licensed under the MIT license:                                         */
-/*    http://www.opensource.org/licenses/mit-license.php                    */
-/*                                                                          */
-/****************************************************************************/
+﻿/***************************************************************************
+ *                                                                          
+ *    The MondoCore Libraries  						                        
+ *                                                                          
+ *        Namespace: MondoCore.Security.Encryption					        
+ *             File: RotatingKeyEncryptor.cs								
+ *        Class(es): RotatingKeyEncryptor								    
+ *          Purpose: An encryptor that encrypts rotates keys                
+ *                                                                          
+ *  Original Author: Jim Lightfoot                                          
+ *    Creation Date: 11 Jan 2020                                            
+ *                                                                          
+ *   Copyright (c) 2020 - Jim Lightfoot, All rights reserved                
+ *                                                                          
+ *  Licensed under the MIT license:                                         
+ *    http://www.opensource.org/licenses/mit-license.php                    
+ *                                                                          
+ ****************************************************************************/
 
 using System;
 using System.Collections.Generic;
@@ -31,11 +31,11 @@ namespace MondoCore.Security.Encryption
     /****************************************************************************/
     public class RotatingKeyEncryptor : IEncryptor
     {
-        private readonly IEncryptorFactory _factory;
+        private readonly IRotatingEncryptorFactory _factory;
         private const int GuidSize = 16;
 
         /****************************************************************************/
-        public RotatingKeyEncryptor(IEncryptorFactory factory)
+        public RotatingKeyEncryptor(IRotatingEncryptorFactory factory)
         {
             _factory = factory;
         }

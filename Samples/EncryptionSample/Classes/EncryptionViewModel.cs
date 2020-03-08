@@ -25,7 +25,7 @@ namespace EncryptionSample
                                              new EncryptionPolicy(), 
                                              new TimeSpan(0, 5, 0));
 
-            this.Encryptor  = new RotatingKeyEncryptor(new SymmetricEncryptorFactory(_encryptorCache, keyFactory));
+            this.Encryptor  = new RotatingKeyEncryptor(new RotatingEncryptorFactory(new SymmetricEncryptorFactory(), _encryptorCache, keyFactory));
         }
 
         public IEncryptor Encryptor { get; }

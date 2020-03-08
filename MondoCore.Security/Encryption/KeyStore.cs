@@ -1,21 +1,21 @@
-﻿/****************************************************************************/
-/*                                                                          */
-/*    The MondoCore Libraries  							                    */
-/*                                                                          */
-/*        Namespace: MondoCore.Security.Encryption				            */
-/*             File: KeyStore.cs					    	                */
-/*        Class(es): KeyStore				         		                */
-/*          Purpose: Encodes and encrypts a key and it's policy             */
-/*                                                                          */
-/*  Original Author: Jim Lightfoot                                          */
-/*    Creation Date: 23 Jan 2020                                            */
-/*                                                                          */
-/*   Copyright (c) 2020 - Jim Lightfoot, All rights reserved                */
-/*                                                                          */
-/*  Licensed under the MIT license:                                         */
-/*    http://www.opensource.org/licenses/mit-license.php                    */
-/*                                                                          */
-/****************************************************************************/
+﻿/***************************************************************************
+ *                                                                          
+ *    The MondoCore Libraries  							                    
+ *                                                                          
+ *        Namespace: MondoCore.Security.Encryption				            
+ *             File: KeyStore.cs					    	                
+ *        Class(es): KeyStore				         		                
+ *          Purpose: Encodes and encrypts a key and it's policy             
+ *                                                                          
+ *  Original Author: Jim Lightfoot                                          
+ *    Creation Date: 23 Jan 2020                                            
+ *                                                                          
+ *   Copyright (c) 2020 - Jim Lightfoot, All rights reserved                
+ *                                                                          
+ *  Licensed under the MIT license:                                         
+ *    http://www.opensource.org/licenses/mit-license.php                    
+ *                                                                          
+ ****************************************************************************/
 
 using System;
 using System.Collections.Generic;

@@ -1,21 +1,21 @@
-﻿/****************************************************************************/
-/*                                                                          */
-/*    The MondoCore Libraries  	                                            */
-/*                                                                          */
-/*      Namespace: MondoCore.Common	                                        */
-/*           File: MemoryStore.cs                                           */
-/*      Class(es): MemoryStore                                              */
-/*        Purpose: In memory implementation of IBlobStore                   */
-/*                                                                          */
-/*  Original Author: Jim Lightfoot                                          */
-/*    Creation Date: 29 Jan 2020                                            */
-/*                                                                          */
-/*   Copyright (c) 2020 - Jim Lightfoot, All rights reserved               */
-/*                                                                          */
-/*  Licensed under the MIT license:                                         */
-/*    http://www.opensource.org/licenses/mit-license.php                    */
-/*                                                                          */
-/****************************************************************************/
+﻿/**************************************************************************
+ *                                                                         
+ *    The MondoCore Libraries  	                                           
+ *                                                                         
+ *      Namespace: MondoCore.Common	                                       
+ *           File: MemoryStore.cs                                          
+ *      Class(es): MemoryStore                                             
+ *        Purpose: In memory implementation of IBlobStore                  
+ *                                                                         
+ *  Original Author: Jim Lightfoot                                         
+ *    Creation Date: 29 Jan 2020                                           
+ *                                                                         
+ *   Copyright (c) 2020 - Jim Lightfoot, All rights reserved               
+ *                                                                         
+ *  Licensed under the MIT license:                                        
+ *    http://www.opensource.org/licenses/mit-license.php                   
+ *                                                                         
+ ****************************************************************************/
 
 using System;
 using System.Collections.Concurrent;
@@ -27,6 +27,9 @@ namespace MondoCore.Common
 {
     /****************************************************************************/
     /****************************************************************************/
+    /// <summary>
+    /// In memory implementation of IBlobStore
+    /// </summary>
     public class MemoryStore : IBlobStore
     {
         private readonly ConcurrentDictionary<string, object> _store = new ConcurrentDictionary<string, object>();

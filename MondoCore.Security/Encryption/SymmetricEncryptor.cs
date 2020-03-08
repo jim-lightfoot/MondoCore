@@ -1,21 +1,21 @@
-﻿/****************************************************************************/
-/*                                                                          */
-/*    The MondoCore Libraries  							                    */
-/*                                                                          */
-/*        Namespace: MondoCore.Security.Encryption  					    */
-/*             File: SymmetricEncryptor.cs					    		    */
-/*        Class(es): SymmetricEncryptor				         		        */
-/*          Purpose: Provides data encryption and decryption                */
-/*                                                                          */
-/*  Original Author: Jim Lightfoot                                          */
-/*    Creation Date: 1 Jan 2020                                             */
-/*                                                                          */
-/*   Copyright (c) 2020 - Jim Lightfoot, All rights reserved                */
-/*                                                                          */
-/*  Licensed under the MIT license:                                         */
-/*    http://www.opensource.org/licenses/mit-license.php                    */
-/*                                                                          */
-/****************************************************************************/
+﻿/***************************************************************************
+ *                                                                          
+ *    The MondoCore Libraries  							                    
+ *                                                                          
+ *        Namespace: MondoCore.Security.Encryption  					    
+ *             File: SymmetricEncryptor.cs					    		    
+ *        Class(es): SymmetricEncryptor				         		        
+ *          Purpose: Provides data encryption and decryption                
+ *                                                                          
+ *  Original Author: Jim Lightfoot                                          
+ *    Creation Date: 1 Jan 2020                                             
+ *                                                                          
+ *   Copyright (c) 2020 - Jim Lightfoot, All rights reserved                
+ *                                                                          
+ *  Licensed under the MIT license:                                         
+ *    http://www.opensource.org/licenses/mit-license.php                    
+ *                                                                          
+ ****************************************************************************/
 
 using System;
 using System.Linq;
@@ -77,7 +77,8 @@ namespace MondoCore.Security.Encryption
                     SetKeySize(algorithm, policy.KeySize);
 
                     policy.IsReadOnly = false;
-                    policy.KeySize = algorithm.KeySize;
+                    policy.KeySize    = algorithm.KeySize;
+                    policy.Algorithm  = algorithm.GetType().ToString();
                     policy.IsReadOnly = true;
 
                     algorithm.GenerateKey();

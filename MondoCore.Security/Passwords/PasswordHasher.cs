@@ -1,28 +1,24 @@
-﻿/****************************************************************************/
-/*                                                                          */
-/*    The MondoCore Libraries  							                    */
-/*                                                                          */
-/*        Namespace: MondoCore.Security.Passwords				            */
-/*             File: PasswordHasher.cs			 		    		        */
-/*        Class(es): PasswordHasher			           		                */
-/*          Purpose: Class for hashing passwords                            */
-/*                                                                          */
-/*  Original Author: Jim Lightfoot                                          */
-/*    Creation Date: 2 Feb 2020                                             */
-/*                                                                          */
-/*   Copyright (c) 2020 - Jim Lightfoot, All rights reserved                */
-/*                                                                          */
-/*  Licensed under the MIT license:                                         */
-/*    http://www.opensource.org/licenses/mit-license.php                    */
-/*                                                                          */
-/****************************************************************************/
+﻿/*************************************************************************** 
+ *                                                                           
+ *    The MondoCore Libraries  							                     
+ *                                                                           
+ *        Namespace: MondoCore.Security.Passwords				             
+ *             File: PasswordHasher.cs			 		    		         
+ *        Class(es): PasswordHasher			           		                 
+ *          Purpose: Class for hashing passwords                             
+ *                                                                           
+ *  Original Author: Jim Lightfoot                                           
+ *    Creation Date: 2 Feb 2020                                              
+ *                                                                           
+ *   Copyright (c) 2020 - Jim Lightfoot, All rights reserved                 
+ *                                                                           
+ *  Licensed under the MIT license:                                          
+ *    http://www.opensource.org/licenses/mit-license.php                     
+ *                                                                           
+ ****************************************************************************/
 
 using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Threading.Tasks;
 using System.Security.Cryptography;
-
 
 namespace MondoCore.Security.Passwords
 {
