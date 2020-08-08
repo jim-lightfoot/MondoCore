@@ -5,6 +5,7 @@ using MondoCore.Common;
 namespace MondoCore.Common.UnitTests
 {
     [TestClass]
+    [TestCategory("Unit Tests")]
     public class StringExtensionsTests
     {
         [TestMethod]

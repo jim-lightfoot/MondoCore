@@ -48,7 +48,7 @@ namespace MondoCore.Common
             { 
                 using(var mem = new MemoryStream())
                 { 
-                    await mem.WriteAsync(stream);
+                    await stream.CopyToAsync(mem);
 
                     return encoder.GetString(mem.ToArray());
                 }
@@ -76,27 +76,6 @@ namespace MondoCore.Common
             byte[] bytes = encoder.GetBytes(data);
        
             return stream.WriteAsync(bytes, 0, bytes.Length);
-        }
-
-        /****************************************************************************/
-        /// <summary>
-        /// Write one stream to another
-        /// </summary>
-        /// <param name="dest">The stream to write to</param>
-        /// <param name="src">The stream to read from</param>
-        public static async Task WriteAsync(this Stream dest, Stream src)
-        {
-            const int BufferSize  = 65536;
-            int       numRead     = 0;
-            byte[]    buffer      = new byte[BufferSize];
-            
-            numRead = await src.ReadAsync(buffer, 0, BufferSize);
-                
-            while(numRead > 0)
-            {
-                await dest.WriteAsync(buffer, 0, numRead);
-                numRead = await src.ReadAsync(buffer, 0, BufferSize);
-            }
         }
     }
 }
