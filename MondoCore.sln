@@ -19,11 +19,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MondoCore.Security", "Mondo
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EncryptionSample", "Samples\EncryptionSample\EncryptionSample.csproj", "{127B7463-8FFE-4216-8DD0-509570FA92C3}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{E1E9677B-3E3E-4EAA-8F27-D29ED7F43D64}"
-	ProjectSection(SolutionItems) = preProject
-		README.md = README.md
-	EndProjectSection
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MondoCore.Log", "MondoCore.Log\MondoCore.Log.csproj", "{94173E52-61ED-4BD1-B1DF-54C64BBBA8B6}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MondoCore.Log.UnitTests", "Test\MondoCore.Log.UnitTests\MondoCore.Log.UnitTests.csproj", "{EC0E41C9-C65A-44A7-AB56-0A35AF92AB5D}"
@@ -31,7 +26,12 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MondoCore.ApplicationInsights.FunctionalTests", "Tests\MondoCore.ApplicationInsights.FunctionalTests\MondoCore.ApplicationInsights.FunctionalTests.csproj", "{ABDE9EC5-26ED-4CC2-87A6-1B2FD90127B4}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MondoCore.ApplicationInsights", "MondoCore.ApplicationInsights\MondoCore.ApplicationInsights.csproj", "{97DF0F9E-3D2C-420D-B095-8E01D8B4E2CD}"
+EndProjectProject("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{E1E9677B-3E3E-4EAA-8F27-D29ED7F43D64}"
+	ProjectSection(SolutionItems) = preProject
+		README.md = README.md
+	EndProjectSection
 EndProject
+
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
