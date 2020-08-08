@@ -7,6 +7,7 @@ using MondoCore.Common;
 namespace MondoCore.Common.UnitTests
 {
     [TestClass]
+    [TestCategory("Unit Tests")]
     public class StreamExtensions
     {
         private const string data = "This once recognized, our attention naturally turns to the question of how small the payment can be. We know that by means of a wheel and axle we can raise 1,000 kilogrammes through 1 metre by allowing 100 kilogrammes to fall 10 metres.";
@@ -34,7 +35,7 @@ namespace MondoCore.Common.UnitTests
             input.Seek(0, SeekOrigin.Begin);
 
             // Write input stream to output stream
-            await output.WriteAsync(input);
+            await input.CopyToAsync(output);
 
             var result = await output.ReadStringAsync();
 
@@ -54,7 +55,7 @@ namespace MondoCore.Common.UnitTests
             input.Seek(0, SeekOrigin.Begin);
 
             // Write input stream to output stream
-            await output.WriteAsync(input);
+            await input.CopyToAsync(output);
 
             var result = await output.ReadStringAsync();
 
