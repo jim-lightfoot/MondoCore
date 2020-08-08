@@ -267,11 +267,11 @@ namespace MondoCore.Security.Encryption
             { 
                 using(var cryptoStream = new CryptoStream(memStream, transform, CryptoStreamMode.Write))
                 {
-                    await cryptoStream.WriteAsync(input);
+                    await input.CopyToAsync(cryptoStream);
                     cryptoStream.FlushFinalBlock();
 
                     memStream.Seek(0, SeekOrigin.Begin);
-                    await output.WriteAsync(memStream);
+                    await memStream.CopyToAsync(output);
                 }
             }
         }

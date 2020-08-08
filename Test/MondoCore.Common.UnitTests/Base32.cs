@@ -1,12 +1,11 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-using System.Text;
-
 using MondoCore.Common;
 
 namespace MondoCore.Common.UnitTests
 {
     [TestClass]
+    [TestCategory("Unit Tests")]
     public class Base32Tests
     {
         [TestMethod]
