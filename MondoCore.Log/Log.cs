@@ -27,7 +27,7 @@ namespace MondoCore.Log
 {
     /*************************************************************************/
     /*************************************************************************/
-    public class Log : ILog
+    public sealed class Log : ILog
     {
         private readonly List<LogEntry> _logs = new List<LogEntry>();
 

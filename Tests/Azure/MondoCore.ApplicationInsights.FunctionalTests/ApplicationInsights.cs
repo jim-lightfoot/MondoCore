@@ -15,7 +15,7 @@ namespace MondoCore.ApplicationInsights.FunctionalTests
         [TestMethod]
         public async Task ApplicationInsights_WriteException()
         {
-            var instrumentationKey = "9f9114ad-1137-41e6-a35b-babd54abbe49";
+            var instrumentationKey = "";
             var log = new ApplicationInsights(new TelemetryConfiguration(instrumentationKey));
              
             await log.WriteError(new System.Exception("Test Exception"), properties: new { Make = "Chevy", Model = "Camaro", Year = 1969 });
@@ -24,7 +24,7 @@ namespace MondoCore.ApplicationInsights.FunctionalTests
         [TestMethod]
         public async Task ApplicationInsights_WriteEvent()
         {
-            var instrumentationKey = "9f9114ad-1137-41e6-a35b-babd54abbe49";
+            var instrumentationKey = "";
             var log = new ApplicationInsights(new TelemetryConfiguration(instrumentationKey));
              
             await log.WriteEvent("Test Event", properties: new { Make = "Chevy", Model = "Camaro", Year = 1969 });

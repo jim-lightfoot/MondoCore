@@ -41,13 +41,15 @@ namespace MondoCore.Common
         #region IBlobStore 
 
         /****************************************************************************/
+        /// <inheritdoc/>
         public virtual Task<IEnumerable<string>> Find(string filter)
         {
-            var path = Path.GetDirectoryName(CombinePath(filter));
+            var directory = new DirectoryInfo(_pathRoot);
 
-            var directory = new DirectoryInfo(path);
-
-            return Task.FromResult(directory.EnumerateFiles().Select( (fi)=> Path.GetFileName(fi.FullName) ));
+            return Task.FromResult(directory.EnumerateFiles(filter, SearchOption.AllDirectories).Select( (fi)=> 
+            {
+                return fi.FullName.Substring(_pathRoot.Length).EnsureNotStartsWith(Path.DirectorySeparatorChar.ToString());
+            }));
         }
 
         /****************************************************************************/
@@ -59,13 +61,13 @@ namespace MondoCore.Common
         /****************************************************************************/
         public async Task<string> Get(string id, Encoding encoding = null)
         {
-            if(encoding == null)
-                encoding = UTF8Encoding.UTF8;
+            encoding = encoding ?? UTF8Encoding.UTF8;
 
             return encoding.GetString(await GetBytes(id));
         }
 
         /****************************************************************************/
+        /// <inheritdoc/>
         public async Task<byte[]> GetBytes(string id)
         {
             using(var memStream = await GetStream(id))
@@ -76,6 +78,7 @@ namespace MondoCore.Common
 
         /****************************************************************************/
         public async Task Delete(string id)
+        /// <inheritdoc/>
         {   
             _ = Task.Run( async ()=>
             { 
@@ -108,7 +111,39 @@ namespace MondoCore.Common
         }
 
         /****************************************************************************/
-        public async Task Put(string id, string blob)
+        /// <inheritdoc/>
+        public async Task Put(string id, string content, Encoding encoding = null)
+        {
+            var path = CombinePath(id);
+
+            encoding = encoding ?? UTF8Encoding.UTF8;
+
+            try
+            {
+                using (var fileStream = new FileStream(path,  
+                                                       FileMode.Append, 
+                                                       FileAccess.Write, 
+                                                       FileShare.None,  
+                                                       bufferSize: 4096, 
+                                                       useAsync: true))  
+                {  
+                    var bytes = encoding.GetBytes(content);  
+      
+                    await fileStream.WriteAsync(bytes, 0, bytes.Length).ConfigureAwait(false);  
+                }; 
+            }
+            catch(DirectoryNotFoundException)
+            {
+                if(EnsurePathExists(path))
+                    await Put(id, content, encoding);
+                else
+                    throw;
+            }        
+        }
+
+        /****************************************************************************/
+        /// <inheritdoc/>
+        public async Task Put(string id, Stream content)
         {
             var path = CombinePath(id);
 
@@ -120,19 +155,39 @@ namespace MondoCore.Common
                                                        FileShare.None,  
                                                        bufferSize: 4096, 
                                                        useAsync: true))  
-                {  
-                    var bytes = UTF8Encoding.UTF8.GetBytes(blob);  
-      
-                    await fileStream.WriteAsync(bytes, 0, bytes.Length).ConfigureAwait(false);  
+                {        
+                    await content.CopyToAsync(fileStream).ConfigureAwait(false);  
                 }; 
             }
             catch(DirectoryNotFoundException)
             {
                 if(EnsurePathExists(path))
-                    await Put(id, blob);
+                    await Put(id, content);
                 else
                     throw;
             }        
+        }
+
+        /****************************************************************************/
+        /// <inheritdoc/>
+        public async Task Enumerate(string filter, Func<IBlob, Task> fnEach, bool asynchronous = true)
+        {
+            var enume = await this.Find(filter);
+            var list = new List<string>(enume);
+            List<Task> tasks = asynchronous ? new List<Task>() : null;
+
+            foreach(var file in list)
+            {
+                var task = fnEach(new FileBlob(file));
+
+                if(asynchronous)
+                    tasks.Add(task);
+                else
+                    await task;
+            }
+
+            if(asynchronous)
+                await Task.WhenAll(tasks);
         }
 
         #endregion
@@ -196,7 +251,21 @@ namespace MondoCore.Common
         {
             return Path.Combine(_pathRoot, id.Replace("/", "\\").Replace("~", "").EnsureNotStartsWith("\\")).Replace("\\\\", "\\");
         }
-       
+
+        /****************************************************************************/
+        public class FileBlob : IBlob
+        { 
+            internal FileBlob(string blob)
+            {
+                this.Name = blob;
+            }
+
+            public string                      Name     { get; }
+            public bool                        Deleted  => false;
+            public IDictionary<string, string> Metadata => null;
+            public IDictionary<string, string> Tags     => null;
+        }
+
         #endregion
     }
 }

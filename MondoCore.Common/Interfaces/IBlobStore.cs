@@ -19,6 +19,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -50,8 +51,15 @@ namespace MondoCore.Common
         /// Puts the string into the blob storage
         /// </summary>
         /// <param name="id">An identifier for the blob. This could be a path in file storage for instance</param>
-        /// <param name="blob">The string to store</param>
-        Task Put(string id, string blob);
+        /// <param name="content">The string to store</param>
+        Task Put(string id, string content, Encoding encoding = null);
+
+        /// <summary>
+        /// Puts the string into the blob storage
+        /// </summary>
+        /// <param name="id">An identifier for the blob. This could be a path in file storage for instance</param>
+        /// <param name="content">The content to store</param>
+        Task Put(string id, Stream content);
 
         /// <summary>
         /// Deletes the blob from storage
@@ -65,5 +73,21 @@ namespace MondoCore.Common
         /// <param name="filter">A file path type filter, e.g. "Policies*.*"</param>
         /// <returns>A collection of the blob ids/paths</returns>
         Task<IEnumerable<string>> Find(string filter);
+
+        /// <summary>
+        /// Enumerates on each blob and calls the given function for each
+        /// </summary>
+        /// <param name="filter">A file path type filter, e.g. "Policies*.*"</param>
+        /// <param name="fnEach">A function to call with each blob</param>
+        /// <returns></returns>
+        Task Enumerate(string filter, Func<IBlob, Task> fnEach, bool asynchronous = true);
+    }
+
+    public interface IBlob
+    {
+        string                      Name        { get; }
+        bool                        Deleted     { get; }
+        IDictionary<string, string> Metadata    { get; }
+        IDictionary<string, string> Tags        { get; }
     }
 }
