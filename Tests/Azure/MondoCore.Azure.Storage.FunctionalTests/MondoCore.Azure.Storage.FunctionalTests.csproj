@@ -14,9 +14,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\MondoCore.ApplicationInsights\MondoCore.ApplicationInsights.csproj" />
-    <ProjectReference Include="..\..\MondoCore.Common\MondoCore.Common.csproj" />
-    <ProjectReference Include="..\..\MondoCore.Log\MondoCore.Log.csproj" />
+    <ProjectReference Include="..\..\..\Azure\MondoCore.Azure.Storage\MondoCore.Azure.Storage.csproj" />
   </ItemGroup>
 
 </Project>

@@ -34,8 +34,8 @@ namespace MondoCore.Security.FunctionalTests
 
             Assert.AreEqual("bob", decrypted);
 
-            Assert.AreEqual(1, (await _decryptStore.Find("")).Count());
-            Assert.AreEqual(1, (await _encryptStore.Find("")).Count());
+            Assert.AreEqual(1, (await _decryptStore.Find("*.*")).Count());
+            Assert.AreEqual(1, (await _encryptStore.Find("*.*")).Count());
         }
 
         [TestMethod]
@@ -59,8 +59,8 @@ namespace MondoCore.Security.FunctionalTests
             Assert.AreEqual("bob", decrypted);
             Assert.AreEqual("fred", decrypted2);
 
-            Assert.AreEqual(1, (await _decryptStore.Find("")).Count());
-            Assert.AreEqual(1, (await _encryptStore.Find("")).Count());
+            Assert.AreEqual(1, (await _decryptStore.Find("*.*")).Count());
+            Assert.AreEqual(1, (await _encryptStore.Find("*.*")).Count());
         }
 
         [TestMethod]
@@ -80,8 +80,8 @@ namespace MondoCore.Security.FunctionalTests
 
             Assert.AreEqual("bob", decrypted);
 
-            Assert.AreEqual(1, (await _decryptStore.Find("")).Count());
-            Assert.AreEqual(1, (await _encryptStore.Find("")).Count());
+            Assert.AreEqual(1, (await _decryptStore.Find("*.*")).Count());
+            Assert.AreEqual(1, (await _encryptStore.Find("*.*")).Count());
         }
 
         private IEncryptor CreateEncryptor()

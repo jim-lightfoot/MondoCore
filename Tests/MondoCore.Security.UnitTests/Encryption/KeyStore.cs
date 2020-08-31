@@ -28,7 +28,7 @@ namespace MondoCore.Security.Encryption.UnitTests
             var key         = new Key(policy);
             var cbResult    = "";
 
-            store.Setup( s=> s.Put(It.IsAny<string>(), It.IsAny<string>())).Callback<string, string>( (id, data)=> { cbResult = data; } );
+            store.Setup( s=> s.Put(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<Encoding>())).Callback<string, string, Encoding>( (id, data, encoding)=> { cbResult = data; } );
 
             await keyStore.Add(key);
 
@@ -45,7 +45,7 @@ namespace MondoCore.Security.Encryption.UnitTests
             var key         = new Key(policy);
             var cbResult    = "";
 
-            store.Setup( s=> s.Put(It.IsAny<string>(), It.IsAny<string>())).Callback<string, string>( (id, data)=> { cbResult = data; } );
+            store.Setup( s=> s.Put(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<Encoding>())).Callback<string, string, Encoding>( (id, data, encoding)=> { cbResult = data; } );
 
             await keyStore.Add(key);
 

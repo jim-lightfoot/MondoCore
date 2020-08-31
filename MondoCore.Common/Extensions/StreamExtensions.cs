@@ -38,8 +38,7 @@ namespace MondoCore.Common
         /// <returns>The resulting string</returns>
         public static async Task<string> ReadStringAsync(this Stream stream, Encoding encoder = null)
         {
-            if(encoder == null)
-                encoder = UTF8Encoding.UTF8;
+            encoder = encoder ?? UTF8Encoding.UTF8;
 
             if(stream.CanSeek)
                 stream.Seek(0, SeekOrigin.Begin);
@@ -70,12 +69,41 @@ namespace MondoCore.Common
         /// <returns></returns>
         public static Task WriteAsync(this Stream stream, string data, Encoding encoder = null)
         {
-            if(encoder == null)
-                encoder = UTF8Encoding.UTF8;
+            encoder = encoder ?? UTF8Encoding.UTF8;
 
             byte[] bytes = encoder.GetBytes(data);
        
             return stream.WriteAsync(bytes, 0, bytes.Length);
         }
+
+        /****************************************************************************/
+        /// <summary>
+        /// Converts stream to byte array
+        /// </summary>
+        /// <param name="stream">Stream to read from</param>
+        /// <param name="encoder">Text encoder. Will default to UTFEncoding</param>
+        /// <returns>The resulting string</returns>
+        public static byte[] ToArray(this Stream stream, Encoding encoder = null)
+        {
+            encoder = encoder ?? UTF8Encoding.UTF8;
+
+            if(stream is MemoryStream memStream)
+                return memStream.ToArray();
+
+            try
+            { 
+                using(var mem = new MemoryStream())
+                { 
+                    stream.CopyTo(mem);
+
+                    return mem.ToArray();
+                }
+            }
+            finally
+            { 
+            }
+        }
+
+
     }
 }

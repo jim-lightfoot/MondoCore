@@ -27,7 +27,7 @@ namespace MondoCore.Log
 {
     /*************************************************************************/
     /*************************************************************************/
-    public class RequestLog : IRequestLog
+    public sealed class RequestLog : IRequestLog
     {
         private readonly ILog _log;
         private readonly IDictionary<string, string> _properties = new Dictionary<string, string>();

@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
+    <TargetFramework>netstandard2.1</TargetFramework>
     <RepositoryUrl>https://github.com/jim-lightfoot/MondoCore</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <PackageLicenseFile>LICENSE</PackageLicenseFile>
@@ -9,6 +9,8 @@
     <Company>MondoCore</Company>
     <Description>Implementation of ILog interface for Application Insights</Description>
     <Copyright>© Jim Lightfoot, All Rights Reserved</Copyright>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <Version>1.0.1</Version>
   </PropertyGroup>
 
   <ItemGroup>
@@ -16,15 +18,15 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\MondoCore.Common\MondoCore.Common.csproj" />
-    <ProjectReference Include="..\MondoCore.Log\MondoCore.Log.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Include="..\LICENSE">
+    <None Include="..\..\LICENSE">
       <Pack>True</Pack>
       <PackagePath></PackagePath>
     </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\MondoCore.Common\MondoCore.Common.csproj" />
+    <ProjectReference Include="..\..\MondoCore.Log\MondoCore.Log.csproj" />
   </ItemGroup>
 
 </Project>
