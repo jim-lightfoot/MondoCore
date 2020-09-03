@@ -17,6 +17,9 @@
  *                                                                           
  ****************************************************************************/
 
+using System;
+using System.Text.RegularExpressions;
+
 namespace MondoCore.Common
 {
     public static class StringExtensions
@@ -84,5 +87,27 @@ namespace MondoCore.Common
         {
             return val.EnsureEndsWith(endsWith.ToString());
         }
+
+        /****************************************************************************/
+        /// <summary>
+        /// Match value to a file wildcard, e.g. "*.*", "*.pdf", etc
+        /// </summary>
+        public static bool MatchesWildcard(this string val, string wildcard)
+        {
+            wildcard = wildcard ?? throw new ArgumentNullException();
+
+            if(wildcard == "*.*")
+                return true;
+
+            if(string.IsNullOrEmpty(val))
+                return false;
+
+            wildcard = Regex.Escape(wildcard).Replace("\\*", ".*");
+            wildcard = string.Concat("^", wildcard.Replace("\\?", "."), "$");
+
+            var regex = new Regex(wildcard, RegexOptions.IgnoreCase);
+
+            return regex.IsMatch(val);
+        }      
     }
 }
