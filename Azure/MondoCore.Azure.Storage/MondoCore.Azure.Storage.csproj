@@ -9,6 +9,7 @@
     <RepositoryUrl>https://github.com/jim-lightfoot/MondoCore</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <Description>Implementation of IBlobStore interface for Azure Blob Storage</Description>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
   </PropertyGroup>
 
   <ItemGroup>
