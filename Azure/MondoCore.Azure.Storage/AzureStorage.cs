@@ -45,7 +45,7 @@ namespace MondoCore.Azure.Storage
 
         public AzureStorage(string connectionString, string blobContainerName)
         {
-            var folderParts = blobContainerName.Split("/");
+            var folderParts = blobContainerName.Split('/');
 
             _container = new BlobContainerClient(connectionString, folderParts[0]);
 
@@ -182,10 +182,10 @@ namespace MondoCore.Azure.Storage
         /// <returns>A collection of the blob ids/paths</returns>
         public async Task Enumerate(string filter, Func<IBlob, Task> fnEach, bool asynchronous = true)
         {
-            var pages = _container.GetBlobsAsync(AzureBlobs.Models.BlobTraits.Metadata).AsPages();
+            var pages = _container.GetBlobs(AzureBlobs.Models.BlobTraits.Metadata).AsPages();
             List<Task> tasks = asynchronous ? new List<Task>() : null;
 
-            await foreach(var page in pages)
+            foreach(var page in pages)
             {
                 var blobs = page.Values;
 
