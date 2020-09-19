@@ -20,7 +20,19 @@
 
 <br>
 
-## [MondoCore.ApplicationInsights](MondoCore.ApplicationInsights/readme.md)
+## [MondoCore.ApplicationInsights](Azure/MondoCore.ApplicationInsights/readme.md)
   Logging to ApplicationInsights.
+  
+
+<br>
+
+## [MondoCore.Azure.Storage](Azure/MondoCore.Azure.Storage/readme.md)
+  Blob storage using Azure blob storage.
+
+
+<br>
+
+## [MondoCore.Azure.Storage.Queue](Azure/MondoCore.Azure.Storage.Queue/readme.md)
+  Message queue for Azure Storage queues.
   
 

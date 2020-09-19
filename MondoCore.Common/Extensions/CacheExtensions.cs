@@ -34,6 +34,18 @@ namespace MondoCore.Common
         }
 
         /****************************************************************************/
+        /// <summary>
+        /// Retrieve an item from the cache or create the item if it does not exist
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="cache">Cache to query</param>
+        /// <param name="key">Key of item to retrieve</param>
+        /// <param name="fnCreate">Callback for creating the item if it does not exist in the cache</param>
+        /// <param name="onError">A callback to call if there wa an error adding the newly creating item into the cache</param>
+        /// <param name="dtExpires">Explicit datetime to expire the item in the cache</param>
+        /// <param name="tsExpires">Time relative to now to expire the cache. If both dtExpires is valid then this value is ignored</param>
+        /// <param name="dependency">Optional dependency that will remove the item from the cache id triggered</param>
+        /// <returns></returns>
         public static async Task<T> Get<T>(this ICache cache, string key, Func<Task<T>> fnCreate, Func<Exception, Task> onError = null, DateTime? dtExpires = null, TimeSpan? tsExpires = null, ICacheDependency dependency = null)
         {
             object obj = null;
