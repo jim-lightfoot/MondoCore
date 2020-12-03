@@ -16,7 +16,7 @@ namespace MondoCore.Azure.Storage.FunctionalTests
     [TestCategory("Functional Tests")]
     public class AzureStorageTests
     {
-        private string _connectionString = "DefaultEndpointsProtocol=http;AccountName=devstoreaccount1;AccountKey=Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==;BlobEndpoint=http://127.0.0.1:10000/devstoreaccount1;QueueEndpoint=http://127.0.0.1:10001/devstoreaccount1;";
+        private string _connectionString = "";
         private string _container = "test";
 
         [TestMethod]
