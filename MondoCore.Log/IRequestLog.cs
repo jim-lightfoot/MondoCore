@@ -29,7 +29,7 @@ namespace MondoCore.Log
     /// Logging while in a single request
     /// </summary>
     /*************************************************************************/
-    public interface IRequestLog : ILog
+    public interface IRequestLog : ILog, IDisposable
     {
         void SetProperty(string name, string value);
     }

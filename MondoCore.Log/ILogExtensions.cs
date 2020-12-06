@@ -19,8 +19,10 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Reflection;
 
 namespace MondoCore.Log
 {
@@ -46,13 +48,15 @@ namespace MondoCore.Log
         /// <param name="log">Log to write to</param>
         /// <param name="ex">Exception to log</param>
         /// <param name="properties">See examples</param>
-        public static Task WriteError(this ILog log, Exception ex, Telemetry.LogSeverity severity = Telemetry.LogSeverity.Error, object properties = null)
+        /// <param name="correlationId">A value to correlate actions across calls and processes</param>
+        public static Task WriteError(this ILog log, Exception ex, Telemetry.LogSeverity severity = Telemetry.LogSeverity.Error, object properties = null, string correlationId = null)
         {
             return log.WriteTelemetry(new Telemetry { 
-                                                      Type       = Telemetry.TelemetryType.Error, 
-                                                      Exception  = ex,
-                                                      Severity   = severity,
-                                                      Properties = properties
+                                                        Type          = Telemetry.TelemetryType.Error, 
+                                                        Exception     = ex,
+                                                        Severity      = severity,
+                                                        CorrelationId = correlationId,
+                                                        Properties    = properties
                                                     });
         }
 
@@ -63,13 +67,15 @@ namespace MondoCore.Log
         /// <param name="eventName">Name of event to write</param>
         /// <param name="properties">See examples in WriteError</param>
         /// <param name="metrics">An optional dictionary of metrics to write</param>
-        public static Task WriteEvent(this ILog log, string eventName, object properties = null, Dictionary<string, double> metrics = null)
+        /// <param name="correlationId">A value to correlate actions across calls and processes</param>
+        public static Task WriteEvent(this ILog log, string eventName, object properties = null, Dictionary<string, double> metrics = null, string correlationId = null)
         {
             return log.WriteTelemetry(new Telemetry { 
-                                                      Type       = Telemetry.TelemetryType.Event, 
-                                                      Message    = eventName,
-                                                      Properties = properties,
-                                                      Metrics    = metrics
+                                                        Type          = Telemetry.TelemetryType.Event, 
+                                                        Message       = eventName,
+                                                        CorrelationId = correlationId,
+                                                        Properties    = properties,
+                                                        Metrics       = metrics
                                                     });
         }
 
@@ -80,14 +86,15 @@ namespace MondoCore.Log
         /// <param name="metricName">Name of metric to write</param>
         /// <param name="value">Value of metric</param>
         /// <param name="properties">See examples in WriteError</param>
-        /// <returns></returns>
-        public static Task WriteMetric(this ILog log, string metricName, double value, object properties = null)
+        /// <param name="correlationId">A value to correlate actions across calls and processes</param>
+        public static Task WriteMetric(this ILog log, string metricName, double value, object properties = null, string correlationId = null)
         {
             return log.WriteTelemetry(new Telemetry { 
-                                                      Type       = Telemetry.TelemetryType.Metric, 
-                                                      Message    = metricName,
-                                                      Value      = value,
-                                                      Properties = properties
+                                                        Type          = Telemetry.TelemetryType.Metric, 
+                                                        Message       = metricName,
+                                                        Value         = value,
+                                                        CorrelationId = correlationId,
+                                                        Properties    = properties
                                                     });
         }
 
@@ -98,13 +105,15 @@ namespace MondoCore.Log
         /// <param name="message">Message to write</param>
         /// <param name="severity">Severity of trace</param>
         /// <param name="properties">See examples in WriteError</param>
-        public static Task WriteTrace(this ILog log, string message, Telemetry.LogSeverity severity, object properties = null)
+        /// <param name="correlationId">A value to correlate actions across calls and processes</param>
+        public static Task WriteTrace(this ILog log, string message, Telemetry.LogSeverity severity, object properties = null, string correlationId = null)
         {
             return log.WriteTelemetry(new Telemetry { 
-                                                      Type       = Telemetry.TelemetryType.Trace, 
-                                                      Message    = message,
-                                                      Severity   = severity,
-                                                      Properties = properties
+                                                        Type          = Telemetry.TelemetryType.Trace, 
+                                                        Message       = message,
+                                                        Severity      = severity,
+                                                        CorrelationId = correlationId,
+                                                        Properties    = properties
                                                     });
         }
 
@@ -117,19 +126,21 @@ namespace MondoCore.Log
         /// <param name="duration">Duration of request</param>
         /// <param name="responseCode">Response code returned from request</param>
         /// <param name="success">True if request was successful</param>
-        /// <returns></returns>
-        public static Task WriteRequest(this ILog log, string name, DateTime startTime, TimeSpan duration, string responseCode, bool success)
+        /// <param name="correlationId">A value to correlate actions across calls and processes</param>
+        public static Task WriteRequest(this ILog log, string name, DateTime startTime, TimeSpan duration, string responseCode, bool success, object properties = null, string correlationId = null)
         {
             return log.WriteTelemetry(new Telemetry { 
-                                                      Type       = Telemetry.TelemetryType.Request, 
-                                                      Message    = name,
-                                                      Request    = new Telemetry.RequestParams
-                                                      {
-                                                        StartTime    = startTime,
-                                                        Duration     = duration,
-                                                        ResponseCode = responseCode,
-                                                        Success      = success
-                                                      }
+                                                        Type          = Telemetry.TelemetryType.Request, 
+                                                        Message       = name,
+                                                        CorrelationId = correlationId,
+                                                        Properties    = properties,
+                                                        Request       = new Telemetry.RequestParams
+                                                        {
+                                                            StartTime    = startTime,
+                                                            Duration     = duration,
+                                                            ResponseCode = responseCode,
+                                                            Success      = success
+                                                        }
                                                     });
         }
     }

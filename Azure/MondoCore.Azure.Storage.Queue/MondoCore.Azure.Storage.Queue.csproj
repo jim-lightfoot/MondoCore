@@ -6,6 +6,8 @@
     <Authors>Jim Lightfoot</Authors>
     <Company>MondoCore</Company>
     <Description>An Azure Storage Queue implementation of IMessageQueue</Description>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <Version>1.0.1</Version>
   </PropertyGroup>
 
   <ItemGroup>

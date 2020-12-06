@@ -48,6 +48,13 @@ namespace MondoCore.Common
         Task<byte[]> GetBytes(string id);
 
         /// <summary>
+        /// Writes a blob with the given id/path to the given stream
+        /// </summary>
+        /// <param name="id">An identifier for the blob. This could be a path.</param>
+        /// <param name="destination">Destination stream to write blob to</param>
+        Task Get(string id, Stream destination);
+
+        /// <summary>
         /// Puts the string into the blob storage
         /// </summary>
         /// <param name="id">An identifier for the blob. This could be a path in file storage for instance</param>
@@ -55,7 +62,7 @@ namespace MondoCore.Common
         Task Put(string id, string content, Encoding encoding = null);
 
         /// <summary>
-        /// Puts the string into the blob storage
+        /// Puts the stream into the blob storage
         /// </summary>
         /// <param name="id">An identifier for the blob. This could be a path in file storage for instance</param>
         /// <param name="content">The content to store</param>

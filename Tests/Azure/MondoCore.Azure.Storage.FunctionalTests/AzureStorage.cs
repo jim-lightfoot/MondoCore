@@ -16,7 +16,7 @@ namespace MondoCore.Azure.Storage.FunctionalTests
     [TestCategory("Functional Tests")]
     public class AzureStorageTests
     {
-        private string _connectionString = "DefaultEndpointsProtocol=http;AccountName=devstoreaccount1;AccountKey=Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==;BlobEndpoint=http://127.0.0.1:10000/devstoreaccount1;QueueEndpoint=http://127.0.0.1:10001/devstoreaccount1;";
+        private string _connectionString = "";
         private string _container = "test";
 
         [TestMethod]
@@ -75,6 +75,27 @@ namespace MondoCore.Azure.Storage.FunctionalTests
 
             Assert.AreEqual("fred", await store.Get("bob"));
 
+            await store.Delete("bob");
+        }
+
+        [TestMethod]
+        public async Task AzureStorage_Get_stream()
+        {
+            var store = CreateStorage();
+
+            await store.Delete("bob");
+            await store.Put("bob", "fred");
+
+            var result = "";
+
+            using(var stream = new MemoryStream())
+            {
+                await store.Get("bob", stream);
+
+                result = UTF8Encoding.UTF8.GetString(stream.ToArray());
+            }
+
+            Assert.AreEqual("fred", result);
             await store.Delete("bob");
         }
 
