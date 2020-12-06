@@ -31,19 +31,22 @@ namespace MondoCore.Log
     /*************************************************************************/
     public interface ILog
     {
-        Task WriteTelemetry(Telemetry telemetry);
+        Task        WriteTelemetry(Telemetry telemetry);
+        IDisposable StartOperation(string operationName);
     }
         
     /*************************************************************************/
     /*************************************************************************/
     public class Telemetry
     {
-        public TelemetryType    Type       { get; set; }
-        public string           Message    { get; set; }
-        public Exception        Exception  { get; set; }
-        public object           Properties { get; set; }
-        public double           Value      { get; set; }
-        public LogSeverity      Severity   { get; set; }
+        public TelemetryType    Type            { get; set; }
+        public string           OperationName   { get; set; }
+        public string           CorrelationId   { get; set; }
+        public string           Message         { get; set; }
+        public Exception        Exception       { get; set; }
+        public object           Properties      { get; set; }
+        public double           Value           { get; set; }
+        public LogSeverity      Severity        { get; set; }
 
         public IDictionary<string, double> Metrics { get; set; }
         public RequestParams Request     { get; set; }

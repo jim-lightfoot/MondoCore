@@ -77,6 +77,17 @@ namespace MondoCore.Common
         }
 
         /****************************************************************************/
+        public async Task Get(string id, Stream destination)
+        {
+            if(!_store.ContainsKey(id))
+                throw new FileNotFoundException();
+                
+            var result = _store[id] as byte[];
+
+            await destination.WriteAsync(result, 0, result.Length);
+        }
+          
+        /****************************************************************************/
         public Task Put(string id, string content, Encoding encoding = null)
         {
             encoding = encoding ?? UTF8Encoding.UTF8;

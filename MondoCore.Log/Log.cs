@@ -71,6 +71,36 @@ namespace MondoCore.Log
             await Task.WhenAll(tasks).ConfigureAwait(false);
         }
 
+        /*************************************************************************/
+        public IDisposable StartOperation(string operationName)
+        {
+            var ops = new OperationList();
+
+            foreach(var logger in _logs)
+            {
+                var op = logger.Log.StartOperation(operationName);
+
+                if(op != null)
+                    ops.Add(op);
+            }
+
+            return ops;
+        }
+
+        /*************************************************************************/
+        private class OperationList : List<IDisposable>, IDisposable
+        {
+            internal OperationList()
+            {
+            }
+
+            public void Dispose()
+            {
+                foreach(var op in this)
+                    op.Dispose();
+            }
+        }
+
         #endregion
 
         #region Private Methods

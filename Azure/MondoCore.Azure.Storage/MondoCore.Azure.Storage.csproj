@@ -10,10 +10,11 @@
     <RepositoryType>git</RepositoryType>
     <Description>Implementation of IBlobStore interface for Azure Blob Storage</Description>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <Version>1.2.0</Version>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Azure.Storage.Blobs" Version="12.5.0" />
+    <PackageReference Include="Azure.Storage.Blobs" Version="12.7.0" />
   </ItemGroup>
 
   <ItemGroup>

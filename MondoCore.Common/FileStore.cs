@@ -77,8 +77,18 @@ namespace MondoCore.Common
         }
 
         /****************************************************************************/
-        public async Task Delete(string id)
         /// <inheritdoc/>
+        public async Task Get(string id, Stream destination)
+        {
+            using(var memStream = await GetStream(id))
+            {
+                await memStream.CopyToAsync(destination);
+            }
+        }
+          
+        /****************************************************************************/
+        /// <inheritdoc/>
+        public async Task Delete(string id)
         {   
             _ = Task.Run( async ()=>
             { 

@@ -25,6 +25,18 @@ namespace MondoCore.Common.UnitTests
         }
 
         [TestMethod]
+        public async Task StreamExtensions_ReadString()
+        {
+            var input = new MemoryStream();
+
+            await input.WriteAsync(data);
+
+            var result = input.ReadString();
+
+            Assert.AreEqual(data, result);
+        }
+
+        [TestMethod]
         public async Task StreamExtensions_WriteAsync_stream()
         {
             var input = new MemoryStream();

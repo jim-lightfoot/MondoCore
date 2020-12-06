@@ -79,6 +79,27 @@ namespace MondoCore.Azure.Storage.FunctionalTests
         }
 
         [TestMethod]
+        public async Task AzureStorage_Get_stream()
+        {
+            var store = CreateStorage();
+
+            await store.Delete("bob");
+            await store.Put("bob", "fred");
+
+            var result = "";
+
+            using(var stream = new MemoryStream())
+            {
+                await store.Get("bob", stream);
+
+                result = UTF8Encoding.UTF8.GetString(stream.ToArray());
+            }
+
+            Assert.AreEqual("fred", result);
+            await store.Delete("bob");
+        }
+
+        [TestMethod]
         [ExpectedException(typeof(FileNotFoundException))]
         public async Task AzureStorage_Get_notfound()
         {
