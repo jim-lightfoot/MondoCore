@@ -23,6 +23,7 @@ using System.Runtime.Serialization;
 using System.Threading.Tasks;
 
 using Microsoft.ApplicationInsights;
+using Microsoft.ApplicationInsights.Channel;
 using Microsoft.ApplicationInsights.DataContracts;
 using Microsoft.ApplicationInsights.Extensibility;
 
@@ -31,15 +32,19 @@ using MondoCore.Log;
 
 namespace MondoCore.ApplicationInsights
 {
+    /*************************************************************************/
+    /*************************************************************************/
     public class ApplicationInsights : ILog
     {
         private readonly TelemetryClient _client;
 
+        /*************************************************************************/
         public ApplicationInsights(TelemetryConfiguration telemetryConfiguration)
         {
             _client = new TelemetryClient(telemetryConfiguration);
         }
 
+        /*************************************************************************/
         public async Task WriteTelemetry(Telemetry telemetry)
         {
             await Task.Yield();
@@ -49,33 +54,122 @@ namespace MondoCore.ApplicationInsights
             switch(telemetry.Type)
             {
                 case Telemetry.TelemetryType.Error:
-                    _client.TrackException(telemetry.Exception, properties: props);
+                { 
+                    var tel = new ExceptionTelemetry(telemetry.Exception);
+                    
+                    tel.Properties.Merge(props);
+                    tel.Message = telemetry.Exception.Message;
+                    tel.SeverityLevel = (SeverityLevel)((int)telemetry.Severity);
+
+                    SetAttributes(telemetry, tel, tel);
+
+                    _client.TrackException(tel);
+
                     break;
+                }
 
                 case Telemetry.TelemetryType.Event:
-                    _client.TrackEvent(telemetry.Message, properties: props);
+                { 
+                    var tel = new EventTelemetry(telemetry.Message);
+
+                    tel.Properties.Merge(props);
+
+                    SetAttributes(telemetry, tel, tel);
+
+                    _client.TrackEvent(tel);
+
                     break;
+                }
 
                 case Telemetry.TelemetryType.Metric:
-                    _client.TrackMetric(telemetry.Message, telemetry.Value, properties: props);
+                { 
+                    var tel = new MetricTelemetry(telemetry.Message, telemetry.Value);
+
+                    tel.Properties.Merge(props);
+
+                    SetAttributes(telemetry, tel, tel);
+
+                    _client.TrackMetric(tel);
+
                     break;
+                }
 
                 case Telemetry.TelemetryType.Trace:
-                    _client.TrackTrace(telemetry.Message, (SeverityLevel)((int)telemetry.Severity), properties: props);
+                { 
+                    var tel = new TraceTelemetry(telemetry.Message, (SeverityLevel)((int)telemetry.Severity));
+
+                    tel.Properties.Merge(props);
+
+                    SetAttributes(telemetry, tel, tel);
+
+                    _client.TrackTrace(tel);
+
                     break;
+                }
 
                 case Telemetry.TelemetryType.Request:
-                    _client.TrackRequest(telemetry.Message, 
-                                            telemetry.Request.StartTime, 
-                                            telemetry.Request.Duration, 
-                                            telemetry.Request.ResponseCode,
-                                            telemetry.Request.Success);
+                { 
+                    var tel = new RequestTelemetry(telemetry.Message, 
+                                                   telemetry.Request.StartTime, 
+                                                   telemetry.Request.Duration, 
+                                                   telemetry.Request.ResponseCode,
+                                                   telemetry.Request.Success);
+
+                    tel.Properties.Merge(props);
+
+                    SetAttributes(telemetry, tel, tel);
+
+                    _client.TrackRequest(tel);
+
                     break;
+                }
             }
 
             _client.Flush();
 
             return;
         }
+
+        /*************************************************************************/
+        public IDisposable StartOperation(string operationName)
+        {
+            return new Operation(_client, operationName);
+        }
+
+        #region Private
+
+        /*************************************************************************/
+        private static void SetAttributes(Telemetry telemetry, ITelemetry aiTelemetry, ISupportProperties properties)
+        {
+            if(!string.IsNullOrWhiteSpace(telemetry.CorrelationId))
+            { 
+                aiTelemetry.Context.Operation.Id = telemetry.CorrelationId;
+                aiTelemetry.Context.Operation.Name = telemetry.OperationName;
+            }
+        }
+
+        /*************************************************************************/
+        /*************************************************************************/
+        private class Operation : IDisposable
+        {
+            private readonly IOperationHolder<RequestTelemetry> _op;
+            private readonly TelemetryClient _client;
+
+            /*************************************************************************/
+            internal Operation(TelemetryClient client, string operationName)
+            {
+                _client = client;
+                _op = client.StartOperation<RequestTelemetry>(operationName);
+            }
+
+            /*************************************************************************/
+            public void Dispose()
+            {
+                _client.StopOperation(_op);
+                _op.Dispose();
+            }
+        }
+
+        #endregion
     }
 }

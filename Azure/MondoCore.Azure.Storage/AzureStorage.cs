@@ -20,16 +20,16 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+
 using Azure;
-using Azure.Core;
 using Azure.Storage.Blobs;
+using Azure.Storage.Blobs.Models;
 using AzureBlobs = Azure.Storage.Blobs;
 
 using MondoCore.Common;
-using Azure.Storage.Blobs.Models;
-using System.Linq;
 
 namespace MondoCore.Azure.Storage
 {
@@ -45,7 +45,7 @@ namespace MondoCore.Azure.Storage
 
         public AzureStorage(string connectionString, string blobContainerName)
         {
-            var folderParts = blobContainerName.Split("/");
+            var folderParts = blobContainerName.Split('/');
 
             _container = new BlobContainerClient(connectionString, folderParts[0]);
 
@@ -70,7 +70,14 @@ namespace MondoCore.Azure.Storage
                 var blob     = _container.GetBlobClient(_folder + id);
                 var response = await blob.DownloadAsync();
 
-                return await response.Value.Content.ReadStringAsync(encoding);
+                try
+                {
+                    return await response.Value.Content.ReadStringAsync(encoding);
+                }
+                finally
+                {
+                    response.Value.Dispose();
+                }
             }
             catch(RequestFailedException ex)
             {
@@ -98,6 +105,28 @@ namespace MondoCore.Azure.Storage
 
                     return mem.ToArray();
                 }
+            }
+            catch(RequestFailedException ex)
+            {
+                if(ex.Status == 404)
+                    throw new FileNotFoundException("Blob not found", ex);
+
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// Writes a blob with the given id/path to the given stream
+        /// </summary>
+        /// <param name="id">An identifier for the blob. This could be a path.</param>
+        /// <param name="destination">Destination stream to write blob to</param>
+        public async Task Get(string id, Stream destination)
+        {
+            try
+            { 
+                var blob = _container.GetBlobClient(_folder + id);
+
+                await blob.DownloadToAsync(destination);
             }
             catch(RequestFailedException ex)
             {
@@ -182,10 +211,10 @@ namespace MondoCore.Azure.Storage
         /// <returns>A collection of the blob ids/paths</returns>
         public async Task Enumerate(string filter, Func<IBlob, Task> fnEach, bool asynchronous = true)
         {
-            var pages = _container.GetBlobsAsync(AzureBlobs.Models.BlobTraits.Metadata).AsPages();
+            var pages = _container.GetBlobs(AzureBlobs.Models.BlobTraits.Metadata).AsPages();
             List<Task> tasks = asynchronous ? new List<Task>() : null;
 
-            await foreach(var page in pages)
+            foreach(var page in pages)
             {
                 var blobs = page.Values;
 

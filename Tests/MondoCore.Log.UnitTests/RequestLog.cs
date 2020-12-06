@@ -102,6 +102,11 @@ namespace MondoCore.Log.UnitTests
             {
                 throw new NotImplementedException();
             }
+
+            public IDisposable StartOperation(string operationName)
+            {
+                return null;
+            }
         }
     }
 }
