@@ -3,7 +3,7 @@
 <br>
   
 
-## [MondoCore.Common](MondoCore.Common/readme.md)
+## [MondoCore.Common](blob/master/MondoCore.Common/README.md)
   A collection of useful classes for everyday .Net development.
 
 <br>
