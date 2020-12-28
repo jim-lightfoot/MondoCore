@@ -55,6 +55,13 @@ namespace MondoCore.Common
         Task Get(string id, Stream destination);
 
         /// <summary>
+        /// Opens a readonly stream to a blob with the given id/path 
+        /// </summary>
+        /// <param name="id">An identifier for the blob. This could be a path.</param>
+        /// <returns>A readonly stream to read the blob from</returns>
+        Task<Stream> OpenRead(string id);
+
+        /// <summary>
         /// Puts the string into the blob storage
         /// </summary>
         /// <param name="id">An identifier for the blob. This could be a path in file storage for instance</param>

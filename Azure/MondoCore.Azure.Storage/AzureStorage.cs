@@ -116,7 +116,7 @@ namespace MondoCore.Azure.Storage
         }
 
         /// <summary>
-        /// Writes a blob with the given id/path to the given stream
+        /// Reads a blob with the given id/path and writes to the given stream
         /// </summary>
         /// <param name="id">An identifier for the blob. This could be a path.</param>
         /// <param name="destination">Destination stream to write blob to</param>
@@ -127,6 +127,28 @@ namespace MondoCore.Azure.Storage
                 var blob = _container.GetBlobClient(_folder + id);
 
                 await blob.DownloadToAsync(destination);
+            }
+            catch(RequestFailedException ex)
+            {
+                if(ex.Status == 404)
+                    throw new FileNotFoundException("Blob not found", ex);
+
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// Opens a readonly stream to a blob with the given id/path 
+        /// </summary>
+        /// <param name="id">An identifier for the blob. This could be a path.</param>
+        /// <returns>A readonly stream to read the blob from</returns>
+        public async Task<Stream> OpenRead(string id)
+        {
+            try
+            { 
+                var blob = _container.GetBlobClient(_folder + id);
+
+                return await blob.OpenReadAsync(new BlobOpenReadOptions(false));
             }
             catch(RequestFailedException ex)
             {
