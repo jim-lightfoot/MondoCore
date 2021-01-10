@@ -7,7 +7,7 @@
     <Company>MondoCore</Company>
     <Description>An Azure Storage Queue implementation of IMessageQueue</Description>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Version>1.0.1</Version>
+    <Version>1.0.2</Version>
   </PropertyGroup>
 
   <ItemGroup>
@@ -18,7 +18,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Azure.Storage.Queues" Version="12.4.2" />
+    <PackageReference Include="Azure.Storage.Queues" Version="12.5.0" />
   </ItemGroup>
 
   <ItemGroup>

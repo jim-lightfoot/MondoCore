@@ -80,10 +80,22 @@ namespace MondoCore.Common
         /// <inheritdoc/>
         public async Task Get(string id, Stream destination)
         {
-            using(var memStream = await GetStream(id))
+            using(var memStream = await OpenRead(id))
             {
                 await memStream.CopyToAsync(destination);
             }
+        }
+          
+        /****************************************************************************/
+        /// <inheritdoc/>
+        public Task<Stream> OpenRead(string id)
+        {
+            return Task.FromResult((Stream)new FileStream(CombinePath(id),  
+                                                          FileMode.Open, 
+                                                          FileAccess.Read, 
+                                                          FileShare.Read,  
+                                                          bufferSize: 4096,
+                                                          useAsync: true));
         }
           
         /****************************************************************************/
@@ -227,12 +239,7 @@ namespace MondoCore.Common
         /****************************************************************************/
         private async Task<MemoryStream> GetStream(string id)
         {
-            using(var fileStream = new FileStream(CombinePath(id),  
-                                                  FileMode.Open, 
-                                                  FileAccess.Read, 
-                                                  FileShare.Read,  
-                                                  bufferSize: 4096,
-                                                  useAsync: true))  
+            using(var fileStream = await OpenRead(id))  
             {  
                 var memStream = new MemoryStream();
                 var buffer    = new byte[4096];  
@@ -260,6 +267,11 @@ namespace MondoCore.Common
         private string CombinePath(string id)
         {
             return Path.Combine(_pathRoot, id.Replace("/", "\\").Replace("~", "").EnsureNotStartsWith("\\")).Replace("\\\\", "\\");
+        }
+
+        public Task<Stream> OpenWrite(string id)
+        {
+            throw new NotImplementedException();
         }
 
         /****************************************************************************/

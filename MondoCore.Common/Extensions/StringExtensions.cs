@@ -77,8 +77,7 @@ namespace MondoCore.Common
 
             return val + endsWith;
         }
-
-                
+        
         /****************************************************************************/
         /// <summary>
         /// Ensure a string ends with a given char by appending it if it does not
@@ -86,6 +85,20 @@ namespace MondoCore.Common
         public static string EnsureEndsWith(this string val, char endsWith)
         {
             return val.EnsureEndsWith(endsWith.ToString());
+        }
+
+        /****************************************************************************/
+        /// <summary>
+        /// Ensure a string ends with a given char by appending it if it does not
+        /// </summary>
+        public static string SubstringBefore(this string val, string before)
+        {
+            var index = val.IndexOf(before);
+
+            if(index == -1)
+                return val;
+
+            return val.Substring(0, index);
         }
 
         /****************************************************************************/

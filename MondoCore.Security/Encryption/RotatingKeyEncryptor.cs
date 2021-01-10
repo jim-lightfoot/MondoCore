@@ -53,9 +53,9 @@ namespace MondoCore.Security.Encryption
             Buffer.BlockCopy(aEncrypted, offset, policyBytes, 0, GuidSize); 
             
             var policyId  = new Guid(policyBytes);
-            var encryptor = await _factory.GetValidForDecryption(policyId);
+            var encryptor = await _factory.GetValidForDecryption(policyId).ConfigureAwait(false);
 
-            return await encryptor.Decrypt(aEncrypted, offset + GuidSize);
+            return await encryptor.Decrypt(aEncrypted, offset + GuidSize).ConfigureAwait(false);
         }
 
         /****************************************************************************/
@@ -63,19 +63,19 @@ namespace MondoCore.Security.Encryption
         {
             var policyBytes = new byte[GuidSize];  
 
-            await input.ReadAsync(policyBytes, 0, GuidSize);
+            await input.ReadAsync(policyBytes, 0, GuidSize).ConfigureAwait(false);
 
             var policyId  = new Guid(policyBytes);
-            var encryptor = await _factory.GetValidForDecryption(policyId);
+            var encryptor = await _factory.GetValidForDecryption(policyId).ConfigureAwait(false);
 
-            await encryptor.Decrypt(input, output);
+            await encryptor.Decrypt(input, output).ConfigureAwait(false);
         }
 
         /****************************************************************************/
         public async Task<byte[]> Encrypt(byte[] aData)
         {
-            var encryptor   = await _factory.GetValidForEncryption();
-            var cipherData  = await encryptor.Encrypt(aData);
+            var encryptor   = await _factory.GetValidForEncryption().ConfigureAwait(false);
+            var cipherData  = await encryptor.Encrypt(aData).ConfigureAwait(false);
             var policy      = encryptor.Policy;
             var policyBytes = policy.Id.ToByteArray();
 
@@ -86,14 +86,14 @@ namespace MondoCore.Security.Encryption
         /****************************************************************************/
         public async Task Encrypt(Stream input, Stream output)
         {
-            var encryptor   = await _factory.GetValidForEncryption();
+            var encryptor   = await _factory.GetValidForEncryption().ConfigureAwait(false);
             var policy      = encryptor.Policy;
             var policyBytes = policy.Id.ToByteArray();
             
             // Prepend the policy id to the cipher data for retrieval when decrypting
-            await output.WriteAsync(policyBytes, 0, policyBytes.Length);
+            await output.WriteAsync(policyBytes, 0, policyBytes.Length).ConfigureAwait(false);
 
-            await encryptor.Encrypt(input, output);
+            await encryptor.Encrypt(input, output).ConfigureAwait(false);
         }
 
         #endregion

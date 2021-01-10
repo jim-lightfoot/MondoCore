@@ -32,8 +32,24 @@ namespace MondoCore.Security.Encryption.UnitTests
             input.Seek(0, SeekOrigin.Begin);
 
             await TestEncryptDecrypt(encr, input, sb.ToString());
+        }
+    
+        [TestMethod]
+        public async Task SymmetricEncryptor_EncryptDecrypt_stream_small()
+        {
+            using(var encr = new SymmetricEncryptor(new Key(new EncryptionPolicy())))
+            { 
+                using(var input = new MemoryStream())
+                { 
+                    // Initialize input with some data 
+                    await input.WriteAsync("bobsyouruncle");
 
-       }
+                    input.Seek(0, SeekOrigin.Begin);
+
+                    await TestEncryptDecrypt(encr, input, "bobsyouruncle");
+                }
+            }
+        }
     
         private async Task TestEncryptDecrypt(IEncryptor encr, Stream input, string inputData)
         {
@@ -41,10 +57,7 @@ namespace MondoCore.Security.Encryption.UnitTests
             { 
                 await encr.Encrypt(input, encrOutput);
 
-                var outputData = await encrOutput.ReadStringAsync();
-
-                Assert.IsFalse(string.IsNullOrEmpty(outputData));
-                Assert.AreNotEqual(inputData, outputData);
+                Assert.AreNotEqual(0, encrOutput.Length);
                 Assert.IsTrue(encr.Policy.IsReadOnly);
 
                 using(var decrOutput = new MemoryStream())
