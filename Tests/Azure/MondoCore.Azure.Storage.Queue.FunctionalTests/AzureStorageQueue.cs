@@ -1,8 +1,11 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
+using System.Threading.Tasks;
+
 using MondoCore.Common;
 using MondoCore.Azure.Storage.Queue;
-using System.Threading.Tasks;
+
+using MondoCore.Azure.TestHelpers;
 
 namespace MondoCore.Azure.Storage.Queue.FunctionalTests
 {
@@ -10,7 +13,6 @@ namespace MondoCore.Azure.Storage.Queue.FunctionalTests
     [TestCategory("Functional Tests")]
     public class AzureStorageQueueTests
     {
-        private string _connectionString = "";
         private string _queue = "test";
 
         [TestMethod]
@@ -29,7 +31,9 @@ namespace MondoCore.Azure.Storage.Queue.FunctionalTests
 
         private IMessageQueue CreateQueue()
         { 
-            return new AzureStorageQueue(_connectionString, _queue);
+            var config = TestConfiguration.Load();
+
+            return new AzureStorageQueue(config.ConnectionString, _queue);
         }    
     }
 }

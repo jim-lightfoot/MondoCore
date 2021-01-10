@@ -109,7 +109,7 @@ namespace MondoCore.Security.Encryption
 
             using(var algorithm = GetAlgorithm())
             {
-                return await EncryptBytes(algorithm, aData);
+                return await EncryptBytes(algorithm, aData).ConfigureAwait(false);
             }
         }
 
@@ -124,8 +124,11 @@ namespace MondoCore.Security.Encryption
 
             using(var algorithm = GetAlgorithm())
             {
-                await EncryptStream(algorithm, input, output);
+                await EncryptStream(algorithm, input, output).ConfigureAwait(false);
             }
+
+            if(output.CanSeek)
+                output.Seek(0, SeekOrigin.Begin);
         }
 
         /****************************************************************************/
@@ -133,7 +136,7 @@ namespace MondoCore.Security.Encryption
         {
             using(var algorithm = GetAlgorithm())
             {
-                return await DecryptBytes(algorithm, aEncrypted, offset);
+                return await DecryptBytes(algorithm, aEncrypted, offset).ConfigureAwait(false);
             }
         }
 
@@ -142,8 +145,11 @@ namespace MondoCore.Security.Encryption
         {
             using(var algorithm = GetAlgorithm())
             {
-                await DecryptStream(algorithm, input, output);
+                await DecryptStream(algorithm, input, output).ConfigureAwait(false);
             }
+
+            if(output.CanSeek)
+                output.Seek(0, SeekOrigin.Begin);
         }
 
         #endregion
@@ -202,13 +208,13 @@ namespace MondoCore.Security.Encryption
         private async Task EncryptStream(SymmetricAlgorithm algorithm, Stream input, Stream output)
         {
             // Write IV out to beginning of output stream
-            await output.WriteAsync(algorithm.IV, 0, algorithm.IV.Length);
+            await output.WriteAsync(algorithm.IV, 0, algorithm.IV.Length).ConfigureAwait(false);
 
             // Get an encryptor
             using(ICryptoTransform encryptor = algorithm.CreateEncryptor(this.Key.ToArray(), algorithm.IV))
             {
                 // Encrypt the data.
-                await Transform(encryptor, input, output);
+                await Transform(encryptor, input, output).ConfigureAwait(false);
             }
         }  
 
@@ -219,7 +225,7 @@ namespace MondoCore.Security.Encryption
             using(ICryptoTransform encryptor = algorithm.CreateEncryptor(this.Key.ToArray(), algorithm.IV))
             {
                 // Encrypt the data.
-                var encrypted = await TransformToBytes(encryptor, data, 0, data.Length);
+                var encrypted = await TransformToBytes(encryptor, data, 0, data.Length).ConfigureAwait(false);
 
                 // Prepend the IV to the encrypted data
                 return encrypted.Prepend(algorithm.IV);
@@ -238,7 +244,7 @@ namespace MondoCore.Security.Encryption
             // Now decrypt the encrypted data using the decryptor
             using(ICryptoTransform decryptor = algorithm.CreateDecryptor(this.Key.ToArray(), iv))
             {
-                return await TransformToBytes(decryptor, encrypted, offset + ivSize, encrypted.Length - ivSize - offset);
+                return await TransformToBytes(decryptor, encrypted, offset + ivSize, encrypted.Length - ivSize - offset).ConfigureAwait(false);
             }
         }
 
@@ -249,13 +255,13 @@ namespace MondoCore.Security.Encryption
             var ivSize = algorithm.BlockSize / 8;
             var iv     = new byte[ivSize];
 
-            await input.ReadAsync(iv, 0, ivSize);
+            await input.ReadAsync(iv, 0, ivSize).ConfigureAwait(false);
 
             // Get a decryptor
             using(ICryptoTransform encryptor = algorithm.CreateDecryptor(this.Key.ToArray(), iv))
             {
                 // Decrypt the data.
-                await Transform(encryptor, input, output);
+                await Transform(encryptor, input, output).ConfigureAwait(false);
             }
         }  
 
@@ -267,11 +273,13 @@ namespace MondoCore.Security.Encryption
             { 
                 using(var cryptoStream = new CryptoStream(memStream, transform, CryptoStreamMode.Write))
                 {
-                    await input.CopyToAsync(cryptoStream);
+                    await input.CopyToAsync(cryptoStream).ConfigureAwait(false);
+
                     cryptoStream.FlushFinalBlock();
+                    await cryptoStream.FlushAsync().ConfigureAwait(false);
 
                     memStream.Seek(0, SeekOrigin.Begin);
-                    await memStream.CopyToAsync(output);
+                    await memStream.CopyToAsync(output).ConfigureAwait(false);
                 }
             }
         }
@@ -285,8 +293,9 @@ namespace MondoCore.Security.Encryption
             { 
                 using(var cryptoStream = new CryptoStream(memory, transform, CryptoStreamMode.Write))
                 {
-                    await cryptoStream.WriteAsync(data, offset, length);
+                    await cryptoStream.WriteAsync(data, offset, length).ConfigureAwait(false);
                     cryptoStream.FlushFinalBlock();
+                    await cryptoStream.FlushAsync().ConfigureAwait(false);
 
                     return memory;
                 }
@@ -301,7 +310,7 @@ namespace MondoCore.Security.Encryption
         /****************************************************************************/
         private async Task<byte[]> TransformToBytes(ICryptoTransform transform, byte[] data, int offset, int length)
         {
-            using(var memStream = await Transform(transform, data, offset, length))
+            using(var memStream = await Transform(transform, data, offset, length).ConfigureAwait(false))
             {
                 return memStream.ToArray();
             }

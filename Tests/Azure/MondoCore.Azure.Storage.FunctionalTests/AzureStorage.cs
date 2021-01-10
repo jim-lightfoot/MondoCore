@@ -1,5 +1,7 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
+using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Text;
@@ -7,8 +9,7 @@ using System.IO;
 
 using MondoCore.Common;
 using MondoCore.Azure.Storage;
-using System.Reflection.Metadata;
-using System.Collections.Generic;
+using MondoCore.Azure.TestHelpers;
 
 namespace MondoCore.Azure.Storage.FunctionalTests
 {
@@ -16,15 +17,12 @@ namespace MondoCore.Azure.Storage.FunctionalTests
     [TestCategory("Functional Tests")]
     public class AzureStorageTests
     {
-        private string _connectionString = "";
-        private string _container = "test";
+        private string _container = "test2";
 
         [TestMethod]
         public async Task AzureStorage_Put_string()
         {
             var store = CreateStorage();
-
-            await store.Delete("bob");
 
             await store.Put("bob", "fred");
 
@@ -38,8 +36,6 @@ namespace MondoCore.Azure.Storage.FunctionalTests
         {
             var store = CreateStorage();
             var encoding = UTF8Encoding.UTF8;
-
-            await store.Delete("bob");
 
             using(var stream = new MemoryStream(encoding.GetBytes("fred")))
             { 
@@ -57,7 +53,6 @@ namespace MondoCore.Azure.Storage.FunctionalTests
             var store = CreateStorage();
             var encoding = UTF8Encoding.UTF8;
 
-            await store.Delete("bob");
             await store.Put("bob", "fred");
 
             Assert.AreEqual("fred", encoding.GetString(await store.GetBytes("bob")));
@@ -70,32 +65,10 @@ namespace MondoCore.Azure.Storage.FunctionalTests
         {
             var store = CreateStorage();
 
-            await store.Delete("bob");
             await store.Put("bob", "fred");
 
             Assert.AreEqual("fred", await store.Get("bob"));
 
-            await store.Delete("bob");
-        }
-
-        [TestMethod]
-        public async Task AzureStorage_Get_stream()
-        {
-            var store = CreateStorage();
-
-            await store.Delete("bob");
-            await store.Put("bob", "fred");
-
-            var result = "";
-
-            using(var stream = new MemoryStream())
-            {
-                await store.Get("bob", stream);
-
-                result = UTF8Encoding.UTF8.GetString(stream.ToArray());
-            }
-
-            Assert.AreEqual("fred", result);
             await store.Delete("bob");
         }
 
@@ -129,6 +102,43 @@ namespace MondoCore.Azure.Storage.FunctionalTests
         }
 
         [TestMethod]
+        public async Task AzureStorage_Get_stream()
+        {
+            var store = CreateStorage();
+
+            var uid = Guid.NewGuid().ToString();
+
+            await store.Put(uid, "fred");
+
+            using(var strm = new MemoryStream())
+            { 
+                await store.Get(uid, strm);
+
+                Assert.AreEqual("fred", await strm.ReadStringAsync());
+            }
+
+            await store.Delete(uid);
+        }
+
+        [TestMethod]
+        public async Task AzureStorage_OpenRead()
+        {
+            var store = CreateStorage();
+            var uid   = Guid.NewGuid().ToString();
+
+            await store.Put(uid, "fred");
+
+            using(var strm = await store.OpenRead(uid))
+            { 
+                var canSeek = strm.CanSeek;
+
+                Assert.AreEqual("fred", await strm.ReadStringAsync());
+            }
+
+            await store.Delete(uid);
+        }
+
+        [TestMethod]
         [ExpectedException(typeof(FileNotFoundException))]
         public async Task AzureStorage_Delete()
         {
@@ -141,6 +151,7 @@ namespace MondoCore.Azure.Storage.FunctionalTests
 
             await store.Delete("bob");
 
+            await Task.Delay(100);
             Assert.AreEqual("fred", await store.Get("bob"));
         }
 
@@ -148,11 +159,6 @@ namespace MondoCore.Azure.Storage.FunctionalTests
         public async Task AzureStorage_FindAll()
         {
             var store = CreateStorage();
-
-            await store.Delete("bio.doc");
-            await store.Delete("photo.jpg");
-            await store.Delete("resume.pdf");
-            await store.Delete("portfolio.pdf");
 
             await store.Put("bio.doc",       "fred");
             await store.Put("photo.jpg",     "flintstone");
@@ -178,11 +184,6 @@ namespace MondoCore.Azure.Storage.FunctionalTests
         {
             var store = CreateStorage();
 
-            await store.Delete("bio.doc");
-            await store.Delete("photo.jpg");
-            await store.Delete("resume.pdf");
-            await store.Delete("portfolio.pdf");
-
             await store.Put("bio.doc",       "fred");
             await store.Put("photo.jpg",     "flintstone");
             await store.Put("resume.pdf",    "bedrock");
@@ -207,11 +208,6 @@ namespace MondoCore.Azure.Storage.FunctionalTests
         {
             var store = CreateStorage();
 
-            await store.Delete("docs/bio.doc");
-            await store.Delete("photos/photo.jpg");
-            await store.Delete("resumes/resume.pdf");
-            await store.Delete("stuff/portfolio.pdf");
-
             await store.Put("docs/bio.doc",       "fred");
             await store.Put("photos/photo.jpg",     "flintstone");
             await store.Put("resumes/resume.pdf",    "bedrock");
@@ -235,7 +231,7 @@ namespace MondoCore.Azure.Storage.FunctionalTests
             Assert.IsTrue(result.Contains("stuff/portfolio.pdf"));
 
             await store.Delete("docs/bio.doc");
-            await store.Delete("photos/photo.jpg");
+            await store.Delete("photos\\photo.jpg");
             await store.Delete("resumes/resume.pdf");
             await store.Delete("stuff/portfolio.pdf");
         }
@@ -243,17 +239,10 @@ namespace MondoCore.Azure.Storage.FunctionalTests
         [TestMethod]
         public async Task AzureStorage_Enumerate_folder()
         {
-            var store = CreateStorage("/cars/chevy");
-            var store2 = CreateStorage("/cars/pontiac");
-
-            await store.Delete("docs/bio.doc");
-            await store.Delete("photos/photo.jpg");
-            await store.Delete("resumes/resume.pdf");
-            await store.Delete("stuff/portfolio.pdf");
-            await store2.Delete("firebird.tiff");
+            var store  = CreateStorage("cars/chevy");
+            var store2 = CreateStorage("cars/pontiac");
 
             await store2.Put("firebird.tiff",       "fred");
-
             await store.Put("docs/bio.doc",       "fred");
             await store.Put("photos/photo.jpg",     "flintstone");
             await store.Put("resumes/resume.pdf",    "bedrock");
@@ -285,7 +274,11 @@ namespace MondoCore.Azure.Storage.FunctionalTests
 
         private IBlobStore CreateStorage(string folder = "")
         { 
-            return new AzureStorage(_connectionString, _container + folder);
+            var uid  = Guid.NewGuid().ToString();
+            var path = Path.Combine(_container, uid, folder).Replace("\\", "/");
+            var config = TestConfiguration.Load();
+
+            return new AzureStorage(config.ConnectionString, path);
         }
     }
 }

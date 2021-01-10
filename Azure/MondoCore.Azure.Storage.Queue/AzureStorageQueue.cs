@@ -66,7 +66,7 @@ namespace MondoCore.Azure.Storage.Queue
         /// <param name="sendOn"></param>
         public async Task<IMessage> Retrieve()
         {
-            var msgs = await _queueClient.ReceiveMessagesAsync(1, new TimeSpan(0, 5, 0));
+            var msgs = await _queueClient.ReceiveMessagesAsync(1, new TimeSpan(0, 5, 0)).ConfigureAwait(false);
 
             return new AzureStorageQueueMessage(msgs.Value[0]);
         }

@@ -117,7 +117,7 @@ namespace MondoCore.Log
                 {
                     try
                     { 
-                        await log.WriteTelemetry(telemetry);
+                        await log.WriteTelemetry(telemetry).ConfigureAwait(false);
 
                         break;
                     }
@@ -126,7 +126,7 @@ namespace MondoCore.Log
                         exLast = ex;
 
                         if(retries > 0)
-                            await Task.Delay(50);
+                            await Task.Delay(50).ConfigureAwait(false);
                     }
                 }
 
@@ -136,7 +136,7 @@ namespace MondoCore.Log
             catch (Exception ex2)
             {
                 // Ok that didn't work, write to a fallback log
-                await FallbackTelemetry(telemetry, index + 1, ex2);
+                await FallbackTelemetry(telemetry, index + 1, ex2).ConfigureAwait(false);
             }
        }
 
@@ -160,7 +160,7 @@ namespace MondoCore.Log
                         {
                             try
                             {
-                                await fallBackLogger.Log.WriteError(excep);
+                                await fallBackLogger.Log.WriteError(excep).ConfigureAwait(false);
                             }
                             catch
                             {
@@ -168,12 +168,12 @@ namespace MondoCore.Log
                             }
                         }
                         else // or write the original telemetry
-                            await fallBackLogger.Log.WriteTelemetry(telemetry);
+                            await fallBackLogger.Log.WriteTelemetry(telemetry).ConfigureAwait(false);
                     }
                     catch (Exception ex)
                     {
                         // The fallback logger failed, fallback to the next
-                        await FallbackTelemetry(telemetry, start + 1, ex);
+                        await FallbackTelemetry(telemetry, start + 1, ex).ConfigureAwait(false);
                     }
 
                     break;

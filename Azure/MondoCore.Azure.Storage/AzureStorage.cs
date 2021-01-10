@@ -27,6 +27,7 @@ using System.Threading.Tasks;
 using Azure;
 using Azure.Storage.Blobs;
 using Azure.Storage.Blobs.Models;
+using Azure.Storage.Blobs.Specialized;
 using AzureBlobs = Azure.Storage.Blobs;
 
 using MondoCore.Common;
@@ -38,140 +39,25 @@ namespace MondoCore.Azure.Storage
     /// <summary>
     /// Azure blob storage
     /// </summary>
-    public class AzureStorage : IBlobStore
+    public class AzureStorage : BaseBlobStorage
     {
         private readonly BlobContainerClient _container;
-        private readonly string _folder;
 
-        public AzureStorage(string connectionString, string blobContainerName)
+        public AzureStorage(string connectionString, string blobContainerName) : base(connectionString, blobContainerName)
         {
-            var folderParts = blobContainerName.Split('/');
-
-            _container = new BlobContainerClient(connectionString, folderParts[0]);
-
-            if(folderParts.Length > 1)
-                _folder = string.Join("/", folderParts.Skip(1)).EnsureEndsWith("/");
-            else
-                _folder = "";
+            _container = new BlobContainerClient(this.ConnectionString, this.ContainerName);
         }
 
         #region IBlobStore
 
         /// <summary>
-        /// Gets a blob with the given id/path
+        /// Opens a writable stream to a blob with the given id/path 
         /// </summary>
         /// <param name="id">An identifier for the blob. This could be a path.</param>
-        /// <param name="encoding">A text encode to use to encode the text</param>
-        /// <returns>A string that is the blob</returns>
-        public async Task<string> Get(string id, Encoding encoding = null)
+        /// <returns>A writable stream to write to the blob</returns>
+        protected internal override Task<Stream> OpenWrite(BlobBaseClient client)
         {
-            try
-            { 
-                var blob     = _container.GetBlobClient(_folder + id);
-                var response = await blob.DownloadAsync();
-
-                try
-                {
-                    return await response.Value.Content.ReadStringAsync(encoding);
-                }
-                finally
-                {
-                    response.Value.Dispose();
-                }
-            }
-            catch(RequestFailedException ex)
-            {
-                if(ex.Status == 404)
-                    throw new FileNotFoundException("Blob not found", ex);
-
-                throw;
-            }
-        }
-
-        /// <summary>
-        /// Gets a blob with the given id/path
-        /// </summary>
-        /// <param name="id">An identifier for the blob. This could be a path.</param>
-        /// <returns>The blob as an array of bytes</returns>
-        public async Task<byte[]> GetBytes(string id)
-        {
-            try
-            { 
-                var blob = _container.GetBlobClient(_folder + id);
-
-                using(var mem = new MemoryStream())
-                { 
-                    await blob.DownloadToAsync(mem);
-
-                    return mem.ToArray();
-                }
-            }
-            catch(RequestFailedException ex)
-            {
-                if(ex.Status == 404)
-                    throw new FileNotFoundException("Blob not found", ex);
-
-                throw;
-            }
-        }
-
-        /// <summary>
-        /// Reads a blob with the given id/path and writes to the given stream
-        /// </summary>
-        /// <param name="id">An identifier for the blob. This could be a path.</param>
-        /// <param name="destination">Destination stream to write blob to</param>
-        public async Task Get(string id, Stream destination)
-        {
-            try
-            { 
-                var blob = _container.GetBlobClient(_folder + id);
-
-                await blob.DownloadToAsync(destination);
-            }
-            catch(RequestFailedException ex)
-            {
-                if(ex.Status == 404)
-                    throw new FileNotFoundException("Blob not found", ex);
-
-                throw;
-            }
-        }
-
-        /// <summary>
-        /// Opens a readonly stream to a blob with the given id/path 
-        /// </summary>
-        /// <param name="id">An identifier for the blob. This could be a path.</param>
-        /// <returns>A readonly stream to read the blob from</returns>
-        public async Task<Stream> OpenRead(string id)
-        {
-            try
-            { 
-                var blob = _container.GetBlobClient(_folder + id);
-
-                return await blob.OpenReadAsync(new BlobOpenReadOptions(false));
-            }
-            catch(RequestFailedException ex)
-            {
-                if(ex.Status == 404)
-                    throw new FileNotFoundException("Blob not found", ex);
-
-                throw;
-            }
-        }
-
-        /// <summary>
-        /// Puts the string into the blob storage
-        /// </summary>
-        /// <param name="id">The identifier for the blob. This could be a path.</param>
-        /// <param name="blob">The string to store</param>
-        public async Task Put(string id, string contents, Encoding encoding = null)
-        {
-            encoding = encoding ?? UTF8Encoding.UTF8;
-
-            using(var mem = new MemoryStream(encoding.GetBytes(contents)))
-            { 
-                await Put(id, mem);
-            }
+            throw new NotSupportedException("Cannot open a write stream on this type of Azure Blob Storage. Use AzurePageBlobStorage.");
         }
 
         /// <summary>
@@ -179,111 +65,20 @@ namespace MondoCore.Azure.Storage
         /// </summary>
         /// <param name="id">An identifier for the blob. This could be a path.</param>
         /// <param name="contents">The contents to store</param>
-        public Task Put(string id, Stream contents)
+        public override async Task Put(string id, Stream contents)
         {
-            var blob = _container.GetBlobClient(_folder + id);
+            var blob = (await GetBlobClient(id).ConfigureAwait(false)) as BlobClient;
 
-            return blob.UploadAsync(contents);
-        }
-
-        /// <summary>
-        /// Deletes the blob from storage
-        /// </summary>
-        /// <param name="id">An identifier for the blob. This could be a path.</param>
-        public async Task Delete(string id)
-        {
-            try
-            { 
-                await _container.DeleteBlobIfExistsAsync(_folder + id);
-            }
-            catch(RequestFailedException ex)
-            {
-                if(ex.Status == 404)
-                    return;
-
-                throw;
-            }
-        }
-
-        /// <summary>
-        /// Finds all blobs that meet the filter 
-        /// </summary>
-        /// <param name="filter">A file path type filter, e.g. "Policies*.*"</param>
-        /// <returns>A collection of the blob ids/paths</returns>
-        public async Task<IEnumerable<string>> Find(string filter)
-        {
-            var result = new List<string>();
-
-            await this.Enumerate(filter, async (blob)=>
-            {
-                result.Add(blob.Name);
-
-                await Task.CompletedTask;
-            },
-            
-            false);
-
-            return result;
-        }
-
-        /// <summary>
-        /// Finds all blobs that meet the filter 
-        /// </summary>
-        /// <param name="filter">A file path type filter, e.g. "Policies*.*"</param>
-        /// <returns>A collection of the blob ids/paths</returns>
-        public async Task Enumerate(string filter, Func<IBlob, Task> fnEach, bool asynchronous = true)
-        {
-            var pages = _container.GetBlobs(AzureBlobs.Models.BlobTraits.Metadata).AsPages();
-            List<Task> tasks = asynchronous ? new List<Task>() : null;
-
-            foreach(var page in pages)
-            {
-                var blobs = page.Values;
-
-                foreach(var blob in blobs)
-                {
-                    if(blob.Name.MatchesWildcard(filter) && (string.IsNullOrWhiteSpace(_folder) || blob.Name.StartsWith(_folder, StringComparison.InvariantCultureIgnoreCase)))
-                    { 
-                        var ablob = new AzureBlob(blob);
-
-                        ablob.Name = ablob.Name.Substring(_folder.Length);
-
-                        var task = fnEach(ablob);
-
-                        if(asynchronous)
-                            tasks.Add(task);
-                        else
-                            await task;
-                    }
-                }
-            }
-
-            if(asynchronous)
-                await Task.WhenAll(tasks);
-
-            return;
+            await blob.UploadAsync(contents).ConfigureAwait(false);
         }
 
         #endregion
 
-        #region Private
-
-        private class AzureBlob : IBlob
+        protected override Task<BlobBaseClient> GetBlobClient(string blobName, bool createIfNotExists = false)
         { 
-            private readonly BlobItem _blob;
+            var blob = new BlobClient(this.ConnectionString, this.ContainerName, Path.Combine(this.FolderName, blobName));
 
-            internal AzureBlob(BlobItem blob)
-            {
-                _blob = blob;
-                this.Name = blob.Name;
-            }
-
-            public string                      Name     { get; set; }
-            public bool                        Deleted  => _blob.Deleted;
-            public IDictionary<string, string> Metadata => _blob.Metadata;
-            public IDictionary<string, string> Tags     => _blob.Tags;
+            return Task.FromResult(blob as BlobBaseClient);
         }
-
-        #endregion
     }
 }
