@@ -40,6 +40,16 @@ namespace MondoCore.Common
         {
             encoder = encoder ?? UTF8Encoding.UTF8;
 
+            if(stream is MemoryStream memStream)
+            { 
+                var array = memStream.ToArray();
+                var arrLen = array.Length;
+                var str = encoder.GetString(memStream.ToArray()).SubstringBefore("\0");
+                var atrLen = str.Length;
+
+                return str;
+            }
+
             if(stream.CanSeek)
                 stream.Seek(0, SeekOrigin.Begin);
 
@@ -47,9 +57,9 @@ namespace MondoCore.Common
             { 
                 using(var mem = new MemoryStream())
                 { 
-                    await stream.CopyToAsync(mem);
+                    await stream.CopyToAsync(mem).ConfigureAwait(false);
 
-                    return encoder.GetString(mem.ToArray());
+                    return encoder.GetString(mem.ToArray()).SubstringBefore("\0");
                 }
             }
             finally
@@ -58,6 +68,7 @@ namespace MondoCore.Common
                     stream.Seek(0, SeekOrigin.Begin);
             }
         }
+
         /****************************************************************************/
         /// <summary>
         /// Reads in from string and converts into a string

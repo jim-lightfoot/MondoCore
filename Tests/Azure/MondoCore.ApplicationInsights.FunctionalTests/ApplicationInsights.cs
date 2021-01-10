@@ -7,19 +7,20 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using MondoCore.ApplicationInsights;
 using MondoCore.Log;
 
+using MondoCore.Azure.TestHelpers;
+
 namespace MondoCore.ApplicationInsights.FunctionalTests
 {
     [TestClass]
     [TestCategory("Functional Tests")]
     public class ApplicationInsightsTests
     {
-        private string _instrumentationKey = "9f9114ad-1137-41e6-a35b-babd54abbe49";
         private string _correlationId = Guid.NewGuid().ToString().ToLower();
 
         [TestMethod]
         public async Task ApplicationInsights_WriteException()
         {
-            var log = new ApplicationInsights(new TelemetryConfiguration(_instrumentationKey));
+            var log = CreateAppInsights();
              
             await log.WriteError(new System.Exception("Test Exception"), properties: new { Make = "Chevy", Model = "Camaro", Year = 1969 });
         }
@@ -27,18 +28,9 @@ namespace MondoCore.ApplicationInsights.FunctionalTests
         [TestMethod]
         public async Task ApplicationInsights_WriteEvent()
         {
-            var log = new ApplicationInsights(new TelemetryConfiguration(_instrumentationKey));
+            var log = CreateAppInsights();
              
             await log.WriteEvent("Test Event", properties: new { Make = "Chevy", Model = "Camaro", Year = 1969 });
-        }
-
-        private IRequestLog SetupRequest(string operationName)
-        {
-            var baseLog = new MondoCore.Log.Log();
-
-            baseLog.Register(new ApplicationInsights(new TelemetryConfiguration(_instrumentationKey)));
-
-            return new RequestLog(baseLog, operationName, _correlationId);
         }
 
         [TestMethod]
@@ -78,5 +70,26 @@ namespace MondoCore.ApplicationInsights.FunctionalTests
                  await log.WriteError(new Exception("Linda's hair is on fire"), properties: new {Make = "Chevy", Model = "Corvette" } );
             }
         }
+
+        #region Private
+
+        private IRequestLog SetupRequest(string operationName)
+        {
+            var baseLog = new MondoCore.Log.Log();
+
+            baseLog.Register(CreateAppInsights());
+
+            return new RequestLog(baseLog, operationName, _correlationId);
+        }
+
+
+        private ApplicationInsights CreateAppInsights()
+        { 
+            var config = TestConfiguration.Load();
+
+            return new ApplicationInsights(new TelemetryConfiguration(config.InstrumentationKey));
+        }
+
+        #endregion
     }
 }

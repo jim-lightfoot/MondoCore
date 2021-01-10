@@ -104,6 +104,40 @@ namespace MondoCore.Common.UnitTests
         }
 
         [TestMethod]
+        public async Task MemoryStore_Get_stream()
+        {
+            var store = CreateStorage();
+
+            await store.Delete("bob");
+            await store.Put("bob", "fred");
+
+            using(var strm = new MemoryStream())
+            { 
+                await store.Get("bob", strm);
+
+                Assert.AreEqual("fred", await strm.ReadStringAsync());
+            }
+
+            await store.Delete("bob");
+        }
+
+        [TestMethod]
+        public async Task MemoryStore_OpenRead()
+        {
+            var store = CreateStorage();
+
+            await store.Delete("bob");
+            await store.Put("bob", "fred");
+
+            using(var strm = await store.OpenRead("bob"))
+            { 
+                Assert.AreEqual("fred", await strm.ReadStringAsync());
+            }
+
+            await store.Delete("bob");
+        }
+
+        [TestMethod]
         [ExpectedException(typeof(FileNotFoundException))]
         public async Task MemoryStore_Delete()
         {

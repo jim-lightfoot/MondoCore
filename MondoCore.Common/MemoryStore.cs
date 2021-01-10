@@ -88,6 +88,18 @@ namespace MondoCore.Common
         }
           
         /****************************************************************************/
+        /// <inheritdoc/>
+        public Task<Stream> OpenRead(string id)
+        {
+            if(!_store.ContainsKey(id))
+                throw new FileNotFoundException();
+                
+            var blob = _store[id] as byte[];
+
+            return Task.FromResult((Stream)new MemoryStream(blob, 0, blob.Length));
+        }        
+
+        /****************************************************************************/
         public Task Put(string id, string content, Encoding encoding = null)
         {
             encoding = encoding ?? UTF8Encoding.UTF8;
@@ -141,6 +153,11 @@ namespace MondoCore.Common
 
             if(asynchronous)
                 await Task.WhenAll(tasks);
+        }
+
+        public Task<Stream> OpenWrite(string id)
+        {
+            throw new NotImplementedException();
         }
 
         #endregion
