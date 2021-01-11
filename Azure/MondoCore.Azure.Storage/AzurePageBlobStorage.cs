@@ -57,7 +57,6 @@ namespace MondoCore.Azure.Storage
         /// <returns>A writable stream to write to the blob</returns>
         protected internal override async Task<Stream> OpenWrite(BlobBaseClient client)
         {
-            // ??? need to make PageBlobWriteStream,Output be a prop so I can reset with a new call to OpenWriteAsync after resizing
             var sizeable = new PageBlobSizeable(client as PageBlobClient);
             var storStrm = await (client as PageBlobClient).OpenWriteAsync(true, 0L, new PageBlobOpenWriteOptions { Size = PageSize }).ConfigureAwait(false);
             var stream   = new PageBlobWriteStream(storStrm, sizeable);
