@@ -24,6 +24,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Reflection;
 
+using MondoCore.Common;
+
 namespace MondoCore.Log
 {
     /*************************************************************************/
@@ -56,7 +58,7 @@ namespace MondoCore.Log
                                                         Exception     = ex,
                                                         Severity      = severity,
                                                         CorrelationId = correlationId,
-                                                        Properties    = properties
+                                                        Properties    = properties == null ? (object)ex.Data : (properties.ToDictionary().Merge(ex.Data.ToDictionary()))
                                                     });
         }
 

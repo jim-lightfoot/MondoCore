@@ -27,6 +27,10 @@ namespace MondoCore.Log
 {
     /*************************************************************************/
     /*************************************************************************/
+    /// <summary>
+    /// Create a log request. Log requests contain request specific data like a 
+    ///    correlation id and custom properties that will be logged on all log entries
+    /// </summary>
     public class RequestLog : IRequestLog
     {
         private readonly ILog           _log;

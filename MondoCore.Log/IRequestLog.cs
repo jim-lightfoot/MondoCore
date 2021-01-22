@@ -26,11 +26,17 @@ namespace MondoCore.Log
 {
     /*************************************************************************/
     /// <summary>
-    /// Logging while in a single request
+    /// Log requests contain request specific data like a 
+    ///    correlation id and custom properties that will be logged on all log entries
     /// </summary>
     /*************************************************************************/
     public interface IRequestLog : ILog, IDisposable
     {
+        /// <summary>
+        /// Sets a property for this request. This property will be logged with every subsequent logging entry
+        /// </summary>
+        /// <param name="name"></param>
+        /// <param name="value"></param>
         void SetProperty(string name, string value);
     }
 }

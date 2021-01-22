@@ -23,6 +23,8 @@ using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 
+using MondoCore.Common;
+
 namespace MondoCore.Log
 {
     /*************************************************************************/
@@ -32,9 +34,19 @@ namespace MondoCore.Log
         private readonly List<LogEntry> _logs = new List<LogEntry>();
 
         /*************************************************************************/
-        public void Register(ILog log, bool fallbackOnly = false, bool fallbackAsError = false)
+        public void Register(ILog log, bool fallbackOnly = false, bool fallbackAsError = false, ICollection<Telemetry.TelemetryType> types = null)
         {
-            _logs.Add(new LogEntry {Log = log, FallbackOnly = fallbackOnly, FallbackAsError = fallbackAsError});
+            IDictionary<Telemetry.TelemetryType, bool> dtypes = null;
+
+            if(types != null && types.Count > 0)
+            { 
+                dtypes = new Dictionary<Telemetry.TelemetryType, bool>();
+
+                foreach(var type in types)
+                    dtypes.Add(type, true);
+            }
+
+            _logs.Add(new LogEntry {Log = log, FallbackOnly = fallbackOnly, FallbackAsError = fallbackAsError, Types = dtypes});
         }
 
         /*************************************************************************/
@@ -60,6 +72,10 @@ namespace MondoCore.Log
             for (var i = 0; i < nLoggers; ++i)
             {
                 var logger = _logs[i];
+
+                // Only log what this sink accepts
+                if(logger.Types != null && !logger.Types.ContainsKey(telemetry.Type))
+                    continue;
 
                 // Only write primary telemetry to non-fallback loggers
                 if (!logger.FallbackOnly)
@@ -187,6 +203,7 @@ namespace MondoCore.Log
             internal bool FallbackAsError;
             internal bool FallbackOnly;
             internal ILog Log;
+            internal IDictionary<Telemetry.TelemetryType, bool> Types;
         }
 
         #endregion
