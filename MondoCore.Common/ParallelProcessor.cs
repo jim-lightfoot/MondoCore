@@ -43,51 +43,51 @@ namespace MondoCore.Common
         private volatile bool              _finished      = false;
         private Exception                  _exError       = null;
         private readonly CancellationToken _cancel;
-        private readonly Func<ParallelProcessor<T>, T, Task> _onEachItem;
+        private readonly Func<ParallelProcessor<T>, long, T, Task> _onEachItem;
 
-        public ParallelProcessor(Func<ParallelProcessor<T>, T, Task> onEachItem, CancellationToken cancel = default)
+        public ParallelProcessor(Func<ParallelProcessor<T>, long, T, Task> onEachItem, CancellationToken cancel = default)
         {
             _cancel     = cancel;
             _onEachItem = onEachItem;
+
+            _scanner = Task.Run( async ()=>
+            {
+                try
+                {
+                    while(!_cancel.IsCancellationRequested && (!_finished || _tasks.Any() || Interlocked.Read(ref _numTasks) > (_lastCompleted+1)))
+                    {
+                        var next = _lastCompleted + 1;
+
+                        if(!_tasks.ContainsKey(next))
+                        {
+                            await Task.Delay(10).ConfigureAwait(false);
+                            continue;
+                        }
+
+                        var subItem = _tasks[next];
+
+                        await _onEachItem(this, next, subItem);
+
+                        _tasks.TryRemove(next, out T val);
+
+                        ++_lastCompleted;
+                    }
+                }
+                catch(Exception ex)
+                {
+                    _exError = ex;
+                }
+            });
         }
 
         public ParallelTask<T> CreateParallelTask(T data)
         {
-            var strm = new ParallelTask<T>(this, data, (int)Interlocked.Increment(ref _numTasks) - 1);
+            return new ParallelTask<T>(this, data, (int)Interlocked.Increment(ref _numTasks) - 1);
+        }
 
-            if(_scanner == null)
-            { 
-                _scanner = Task.Run( async ()=>
-                {
-                    try
-                    {
-                        while(!_cancel.IsCancellationRequested && (!_finished || _tasks.Any() || Interlocked.Read(ref _numTasks) > (_lastCompleted+1)))
-                        {
-                            var next = _lastCompleted + 1;
-
-                            if(!_tasks.ContainsKey(next))
-                            {
-                                await Task.Delay(10).ConfigureAwait(false);
-                                continue;
-                            }
-
-                            var subItem = _tasks[next];
-
-                            await _onEachItem(this, subItem);
-
-                            _tasks.TryRemove(next, out T val);
-
-                            ++_lastCompleted;
-                        }
-                    }
-                    catch(Exception ex)
-                    {
-                        _exError = ex;
-                    }
-                });
-            }
-
-            return strm;
+        public ParallelTask<T> CreateParallelTask(int index, T data)
+        {
+            return new ParallelTask<T>(this, data, index);
         }
 
         public async virtual Task WaitComplete()

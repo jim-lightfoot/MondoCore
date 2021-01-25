@@ -33,7 +33,7 @@ namespace MondoCore.Common
         /****************************************************************************/
         public static async Task ParallelForEach<T>(this IEnumerable<T> list, Func<long, T, Task> fnEach, int maxParallelism = 128, CancellationToken cancelToken = default)
         {
-            maxParallelism = Math.Min(8, Math.Max(1, maxParallelism));
+            maxParallelism = Math.Min(1024, Math.Max(2, maxParallelism));
 
             var block = new ActionBlock<Block<T>>(async (payload)=>
             {

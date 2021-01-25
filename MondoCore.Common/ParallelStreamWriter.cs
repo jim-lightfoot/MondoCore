@@ -43,7 +43,7 @@ namespace MondoCore.Common
             _output = output;
         }
 
-        private static async Task WriteStream(ParallelProcessor<Stream> self, Stream strm)
+        private static async Task WriteStream(ParallelProcessor<Stream> self, long index, Stream strm)
         {
             strm.Seek(0, SeekOrigin.Begin);
 
