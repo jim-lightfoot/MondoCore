@@ -2,10 +2,10 @@
  *                                                                          
  *    The MondoCore Libraries  							                    
  *                                                                          
- *        Namespace: MondoCore.AzurStorage				            
+ *        Namespace: MondoCore.AzureStorage				            
  *             File: PageBlobWriteStream.cs			 		    		    
  *        Class(es): PageBlobWriteStream				           		        
- *          Purpose: Base class for blob storage accounts in Azure Storge                           
+ *          Purpose: Base class for blob storage accounts in Azure Storage                           
  *                                                                          
  *  Original Author: Jim Lightfoot                                          
  *    Creation Date: 5 Jan 2021                                             

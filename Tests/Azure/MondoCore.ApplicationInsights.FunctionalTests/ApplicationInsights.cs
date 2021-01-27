@@ -40,7 +40,7 @@ namespace MondoCore.ApplicationInsights.FunctionalTests
             { 
                 log.SetProperty("Model", "Corvette");
 
-                await log.WriteError(new Exception("Bob's hair is on fire"), properties: new {Make = "Chevy" } );
+                await log.WriteError(new Exception("Bob's hair is on fire"), properties: new {Make = "Chevy", Engine = new { Cylinders = 8, Displacement = 350, Piston = new { RodMaterial = "Chrome Moly", Material = "Stainless Steel", Diameter = 9200 } } } );
                 await log.WriteError(new Exception("Fred's hair is on fire"), properties: new {Make = "Chevy" } );
                 await log.WriteError(new Exception("Wilma's hair is on fire"), properties: new {Make = "Chevy" } );
             }

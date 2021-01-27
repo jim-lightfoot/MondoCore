@@ -48,8 +48,6 @@ namespace MondoCore.ApplicationInsights
         public async Task WriteTelemetry(Telemetry telemetry)
         {
             await Task.Yield();
-
-            var props = telemetry.Properties?.ToStringDictionary();
             
             switch(telemetry.Type)
             {
@@ -57,7 +55,7 @@ namespace MondoCore.ApplicationInsights
                 { 
                     var tel = new ExceptionTelemetry(telemetry.Exception);
                     
-                    tel.Properties.Merge(props);
+                    tel.MergeProperties(telemetry);
                     tel.Message = telemetry.Exception.Message;
                     tel.SeverityLevel = (SeverityLevel)((int)telemetry.Severity);
 
@@ -72,7 +70,7 @@ namespace MondoCore.ApplicationInsights
                 { 
                     var tel = new EventTelemetry(telemetry.Message);
 
-                    tel.Properties.Merge(props);
+                    tel.MergeProperties(telemetry);
 
                     SetAttributes(telemetry, tel, tel);
 
@@ -85,7 +83,7 @@ namespace MondoCore.ApplicationInsights
                 { 
                     var tel = new MetricTelemetry(telemetry.Message, telemetry.Value);
 
-                    tel.Properties.Merge(props);
+                    tel.MergeProperties(telemetry);
 
                     SetAttributes(telemetry, tel, tel);
 
@@ -98,7 +96,7 @@ namespace MondoCore.ApplicationInsights
                 { 
                     var tel = new TraceTelemetry(telemetry.Message, (SeverityLevel)((int)telemetry.Severity));
 
-                    tel.Properties.Merge(props);
+                    tel.MergeProperties(telemetry);
 
                     SetAttributes(telemetry, tel, tel);
 
@@ -115,7 +113,7 @@ namespace MondoCore.ApplicationInsights
                                                    telemetry.Request.ResponseCode,
                                                    telemetry.Request.Success);
 
-                    tel.Properties.Merge(props);
+                    tel.MergeProperties(telemetry);
 
                     SetAttributes(telemetry, tel, tel);
 

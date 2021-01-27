@@ -24,6 +24,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Reflection;
 
+using MondoCore.Common;
+
 namespace MondoCore.Log
 {
     /*************************************************************************/
@@ -36,6 +38,10 @@ namespace MondoCore.Log
         /// <example>
         ///     Use anonymous objects to pass properties:
         ///     log.WriteEvent("Message received", new { Category = "Blue", Level = 4 });
+        /// </example>        
+        /// <example>
+        ///     Use non-anonymous (POCO) objects to pass properties (all public properties are logged):
+        ///     log.WriteEvent("Message received", new ProductInfo { Category = "Blue", Level = 4 });
         /// </example>        
         /// <example>
         ///   Use dictionary to pass properties:
@@ -56,7 +62,7 @@ namespace MondoCore.Log
                                                         Exception     = ex,
                                                         Severity      = severity,
                                                         CorrelationId = correlationId,
-                                                        Properties    = properties
+                                                        Properties    = properties == null ? (object)ex.Data : (properties.ToDictionary().Merge(ex.Data.ToDictionary()))
                                                     });
         }
 
