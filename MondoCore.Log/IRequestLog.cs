@@ -37,6 +37,6 @@ namespace MondoCore.Log
         /// </summary>
         /// <param name="name"></param>
         /// <param name="value"></param>
-        void SetProperty(string name, string value);
+        void SetProperty(string name, object value);
     }
 }

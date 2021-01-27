@@ -40,6 +40,10 @@ namespace MondoCore.Log
         ///     log.WriteEvent("Message received", new { Category = "Blue", Level = 4 });
         /// </example>        
         /// <example>
+        ///     Use non-anonymous (POCO) objects to pass properties (all public properties are logged):
+        ///     log.WriteEvent("Message received", new ProductInfo { Category = "Blue", Level = 4 });
+        /// </example>        
+        /// <example>
         ///   Use dictionary to pass properties:
         ///     log.WriteEvent("Message received", new Dictionary<string, object> { {"Category", "Blue"}, {"Level", 4"} });
         /// </example>

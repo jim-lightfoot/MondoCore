@@ -35,7 +35,7 @@ namespace MondoCore.Log
     {
         private readonly ILog           _log;
         private readonly IDisposable    _operation;
-        private readonly IDictionary<string, string> _properties = new Dictionary<string, string>();
+        private readonly IDictionary<string, object> _properties = new Dictionary<string, object>();
         private readonly string         _correlationId;
         private readonly string         _operationName;
 
@@ -53,7 +53,7 @@ namespace MondoCore.Log
         }
 
         /*************************************************************************/
-        public void SetProperty(string name, string value)
+        public void SetProperty(string name, object value)
         {
             _properties[name] = value;
         }
@@ -62,7 +62,7 @@ namespace MondoCore.Log
         public Task WriteTelemetry(Telemetry telemetry)
         {
             if(_properties.Count > 0)
-                telemetry.Properties = telemetry.Properties.ToStringDictionary().Merge(_properties);
+                telemetry.Properties = telemetry.Properties.ToDictionary().Merge(_properties);
 
             telemetry.CorrelationId = _correlationId;
             telemetry.OperationName = _operationName;
