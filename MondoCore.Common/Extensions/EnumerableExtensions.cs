@@ -8,9 +8,9 @@
  *          Purpose: Extensions for dictionaries                  
  *                                                                          
  *  Original Author: Jim Lightfoot                                          
- *    Creation Date: 1 Jan 2020                                             
+ *    Creation Date: 16 Jan 2021                                             
  *                                                                          
- *   Copyright (c) 2005-2020 - Jim Lightfoot, All rights reserved           
+ *   Copyright (c) 2021 - Jim Lightfoot, All rights reserved           
  *                                                                          
  *  Licensed under the MIT license:                                         
  *    http://www.opensource.org/licenses/mit-license.php                    
@@ -18,29 +18,47 @@
  ****************************************************************************/
 
 using System;
-using System.Collections;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.IO;
+using System.Threading;
+using System.Threading.Tasks;
+using System.Threading.Tasks.Dataflow;
 
 namespace MondoCore.Common
 {
     /****************************************************************************/
     /****************************************************************************/
-    public static class DictionaryExtensions
+    public static class EnumerableExtensions
     {
         /****************************************************************************/
-        public static IDictionary<K, V> Merge<K, V>(this IDictionary<K, V> dict1, IDictionary<K, V> dict2)
+        public static async Task ParallelForEach<T>(this IEnumerable<T> list, Func<long, T, Task> fnEach, int maxParallelism = 128, CancellationToken cancelToken = default)
         {
-            if(dict2 == null || dict2.Count == 0)
-                return dict1;
-       
-            if(dict1 == null || dict1.Count == 0)
-                return dict2;
-       
-            foreach(var kv in dict2)
-                dict1[kv.Key] = kv.Value;
+            maxParallelism = Math.Min(1024, Math.Max(2, maxParallelism));
 
-            return dict1;
+            var block = new ActionBlock<Block<T>>(async (payload)=>
+            {
+                await fnEach(payload.Index, payload.Data);
+            }, 
+            new ExecutionDataflowBlockOptions { MaxDegreeOfParallelism = maxParallelism, CancellationToken = cancelToken });
+
+            long i = 0L;
+
+            foreach(var item in list)
+            {
+                if(cancelToken.IsCancellationRequested)
+                    break;
+
+                await block.SendAsync(new Block<T> { Index = i++, Data = item } );
+            }
+
+            block.Complete();
+            await block.Completion;
+        }
+
+        private class Block<T>
+        {
+            internal long Index { get; set; }
+            internal T    Data  { get; set; }
         }
     }
 }
