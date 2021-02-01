@@ -13,4 +13,9 @@
     <PackageReference Include="coverlet.collector" Version="1.3.0" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\Azure\MondoCore.Azure.Configuration\MondoCore.Azure.Configuration.csproj" />
+    <ProjectReference Include="..\TestHelpers\TestHelpers.csproj" />
+  </ItemGroup>
+
 </Project>

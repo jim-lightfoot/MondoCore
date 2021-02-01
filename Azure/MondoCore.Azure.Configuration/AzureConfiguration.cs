@@ -16,23 +16,35 @@ namespace MondoCore.Azure.Configuration
     {
         private readonly IConfiguration _config;
 
-        public AzureConfiguration(string endPoint)
+        /// <summary>
+        /// Connect to Azure App Configuration using a url and managed indenity for app running in Azure
+        /// </summary>
+        /// <param name="azureConfigUrl"></param>
+        public AzureConfiguration(string azureConfigUrl)
         {
-            var builder = new ConfigurationBuilder();
+            var builder    = new ConfigurationBuilder();
+            var credential = new DefaultAzureCredential();
 
             builder.AddAzureAppConfiguration(options =>
             {
-                options.Connect(new Uri(endPoint), new DefaultAzureCredential());
+                options.Connect(new Uri(azureConfigUrl), credential);
 
                 options.ConfigureKeyVault(kv =>
                 {
-                    kv.SetCredential(new ManagedIdentityCredential());
+                    kv.SetCredential(credential);
                 });
             });
 
             _config = builder.Build();
         }
 
+        /// <summary>
+        /// Connect to Azure App Configuration using a connection string and tenant id. For debugging and testing locally only.
+        /// </summary>
+        /// <param name="connectionString"></param>
+        /// <param name="tenantId"></param>
+        /// <param name="clientId"></param>
+        /// <param name="secret"></param>
         public AzureConfiguration(string connectionString, string tenantId, string clientId, string secret)
         {
             var builder = new ConfigurationBuilder();

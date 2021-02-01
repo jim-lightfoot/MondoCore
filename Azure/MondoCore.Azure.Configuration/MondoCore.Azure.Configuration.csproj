@@ -2,6 +2,14 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
+    <Authors>Jim Lightfoot</Authors>
+    <Company>MondoCore</Company>
+    <Product>MondoCore</Product>
+    <Description>Connect to Azure App Configuration</Description>
+    <Copyright>© Jim Lightfoot, All Rights Reserved</Copyright>
+    <PackageLicenseFile>LICENSE</PackageLicenseFile>
+    <RepositoryUrl>https://github.com/jim-lightfoot/MondoCore</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
   </PropertyGroup>
 
   <ItemGroup>
@@ -12,6 +20,13 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\MondoCore.Common\MondoCore.Common.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="..\LICENSE">
+      <Pack>True</Pack>
+      <PackagePath></PackagePath>
+    </None>
   </ItemGroup>
 
 </Project>
