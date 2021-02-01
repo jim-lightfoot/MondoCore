@@ -7,9 +7,14 @@ using System.Threading.Tasks;
 using System.Text;
 using System.IO;
 
+using Azure.Identity;
+
 using MondoCore.Common;
 using MondoCore.Azure.Storage;
 using MondoCore.Azure.TestHelpers;
+
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Configuration.AzureAppConfiguration;
 
 namespace MondoCore.Azure.Storage.FunctionalTests
 {
@@ -272,6 +277,17 @@ namespace MondoCore.Azure.Storage.FunctionalTests
             await store2.Delete("firebird.tiff");
         }
 
+
+        [TestMethod]
+        public void AzureConfig_Get()
+        {
+            var config  = CreateConfig();
+
+            Assert.AreEqual(@"http:\\www.bedrock.us", config["BedrockUrl"]);
+            Assert.AreEqual("bobsyouruncle", config["BedrockClientId"]);
+            Assert.AreEqual("wilmaflintstone", config["BedrockClientSecret"]);
+        }
+
         private IBlobStore CreateStorage(string folder = "")
         { 
             var uid  = Guid.NewGuid().ToString();
@@ -280,5 +296,31 @@ namespace MondoCore.Azure.Storage.FunctionalTests
 
             return new AzureStorage(config.ConnectionString, path);
         }
+
+        private IConfiguration CreateConfig(string folder = "")
+        { 
+            var builder = new ConfigurationBuilder();
+            var config = TestConfiguration.Load();
+
+            builder.AddAzureAppConfiguration(options =>
+            {
+                if(IsDevelopmentEnvironment)
+                    options.Connect(config.ConfigConnectionString);
+                else
+                    options.Connect(new Uri(config.ConfigConnectionString), new DefaultAzureCredential());
+
+                options.ConfigureKeyVault(kv =>
+                {
+                    if(IsDevelopmentEnvironment)
+                        kv.SetCredential(new ClientSecretCredential(config.KeyVaultTenantId, config.KeyVaultClientId, config.KeyVaultClientSecret));
+                   else
+                        kv.SetCredential(new ManagedIdentityCredential());
+                });
+            });
+
+            return builder.Build();
+        }
+
+        private bool IsDevelopmentEnvironment => true;
     }
 }

@@ -21,7 +21,12 @@ namespace MondoCore.Azure.TestHelpers
 
     public class Configuration
     {
-        public string InstrumentationKey { get; set; }
-        public string ConnectionString   { get; set; }
+        public string InstrumentationKey        { get; set; }
+        public string ConnectionString          { get; set; }
+        public string ConfigConnectionString    { get; set; }
+
+        public string KeyVaultTenantId          { get; set; }
+        public string KeyVaultClientId          { get; set; }
+        public string KeyVaultClientSecret      { get; set; }     
     }
 }
