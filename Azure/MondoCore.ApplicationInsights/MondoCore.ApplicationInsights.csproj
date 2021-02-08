@@ -10,7 +10,7 @@
     <Description>Implementation of ILog interface for Application Insights</Description>
     <Copyright>© Jim Lightfoot, All Rights Reserved</Copyright>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Version>1.3.0</Version>
+    <Version>1.4.0</Version>
   </PropertyGroup>
 
   <ItemGroup>

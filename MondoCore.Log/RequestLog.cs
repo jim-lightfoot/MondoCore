@@ -43,13 +43,26 @@ namespace MondoCore.Log
         public RequestLog(ILog log, string operationName = null, string correlationId = null)
         {
             _log = log;
-            _correlationId = correlationId ?? Guid.NewGuid().ToString().ToLower();
+
+            _correlationId = string.IsNullOrWhiteSpace(correlationId) ? Guid.NewGuid().ToString().ToLower() : correlationId;
             _operationName = operationName;
 
             if(!string.IsNullOrWhiteSpace(operationName))
                 _operation = log.StartOperation(operationName);
             else
                 _operation = null;
+        }
+
+        /*************************************************************************/
+        public IRequestLog NewRequest(string operationName = null, string correlationId = null)
+        {
+            if(string.IsNullOrWhiteSpace(operationName))
+                operationName = _operationName;
+
+            if(string.IsNullOrWhiteSpace(correlationId))
+                correlationId = _correlationId;
+
+            return new RequestLog(this, operationName, correlationId);
         }
 
         /*************************************************************************/
@@ -64,8 +77,8 @@ namespace MondoCore.Log
             if(_properties.Count > 0)
                 telemetry.Properties = telemetry.Properties.ToDictionary().Merge(_properties);
 
-            telemetry.CorrelationId = _correlationId;
-            telemetry.OperationName = _operationName;
+            telemetry.CorrelationId = string.IsNullOrWhiteSpace(telemetry.CorrelationId) ? _correlationId : telemetry.CorrelationId;
+            telemetry.OperationName = string.IsNullOrWhiteSpace(telemetry.OperationName) ? _operationName : telemetry.OperationName;
 
             return _log.WriteTelemetry(telemetry);
         }

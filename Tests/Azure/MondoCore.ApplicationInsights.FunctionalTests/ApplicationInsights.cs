@@ -47,6 +47,19 @@ namespace MondoCore.ApplicationInsights.FunctionalTests
         }
 
         [TestMethod]
+        public async Task ApplicationInsights_WriteError_dotted()
+        {
+            using(var log = SetupRequest("WriteError", false))
+            { 
+                log.SetProperty("Model", "Corvette");
+
+                await log.WriteError(new Exception("Bob's hair is on fire"), properties: new {Make = "Chevy", Engine = new { Cylinders = 8, Displacement = 350, Piston = new { RodMaterial = "Chrome Moly", Material = "Stainless Steel", Diameter = 9200 } } } );
+                await log.WriteError(new Exception("Fred's hair is on fire"), properties: new {Make = "Chevy" } );
+                await log.WriteError(new Exception("Wilma's hair is on fire"), properties: new {Make = "Chevy" } );
+            }
+        }
+
+        [TestMethod]
         public async Task ApplicationInsights_WriteError2()
         {
             using(var log = SetupRequest("WriteError2"))
@@ -73,21 +86,21 @@ namespace MondoCore.ApplicationInsights.FunctionalTests
 
         #region Private
 
-        private IRequestLog SetupRequest(string operationName)
+        private IRequestLog SetupRequest(string operationName, bool childrenAsJson = true)
         {
             var baseLog = new MondoCore.Log.Log();
 
-            baseLog.Register(CreateAppInsights());
+            baseLog.Register(CreateAppInsights(childrenAsJson));
 
             return new RequestLog(baseLog, operationName, _correlationId);
         }
 
 
-        private ApplicationInsights CreateAppInsights()
+        private ApplicationInsights CreateAppInsights(bool childrenAsJson = true)
         { 
             var config = TestConfiguration.Load();
 
-            return new ApplicationInsights(new TelemetryConfiguration(config.InstrumentationKey));
+            return new ApplicationInsights(new TelemetryConfiguration(config.InstrumentationKey), childrenAsJson);
         }
 
         #endregion

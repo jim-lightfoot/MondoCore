@@ -104,6 +104,16 @@ namespace MondoCore.Log
         }
 
         /*************************************************************************/
+        public IRequestLog NewRequest(string operationName = null, string correlationId = null)
+        {
+            return new RequestLog(this, operationName, correlationId);
+        }
+
+        #endregion
+
+        #region Private Methods
+
+        /*************************************************************************/
         private class OperationList : List<IDisposable>, IDisposable
         {
             internal OperationList()
@@ -116,10 +126,6 @@ namespace MondoCore.Log
                     op.Dispose();
             }
         }
-
-        #endregion
-
-        #region Private Methods
 
         /*************************************************************************/
         private async Task WriteTelemetry(ILog log, Telemetry telemetry, int index)
