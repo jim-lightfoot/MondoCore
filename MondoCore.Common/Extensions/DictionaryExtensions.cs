@@ -34,7 +34,7 @@ namespace MondoCore.Common
             if(dict2 == null || dict2.Count == 0)
                 return dict1;
        
-            if(dict1 == null || dict1.Count == 0)
+            if(dict1 == null)
                 return dict2;
        
             foreach(var kv in dict2)

@@ -12,30 +12,14 @@ namespace MondoCore.ApplicationInsights
 {
     internal static class ISupportPropertiesExtensions
     {
-        internal static void MergeProperties(this ISupportProperties aiTelemetry, Telemetry telemetry)
+        internal static void MergeProperties(this ISupportProperties aiTelemetry, Telemetry telemetry, bool childrenAsJson)
         {
-            var props = telemetry.Properties?.ToDictionary();
+            var props = telemetry.Properties?.ToStringDictionary(childrenAsJson);
 
             if(props == null || props.Count == 0)
                 return;
 
-            foreach(var kv in props)
-            {
-                var val = kv.Value;
-
-                if(val == null)
-                    continue;
-
-                if(val.GetType().IsPrimitive || val is string)
-                {
-                    aiTelemetry.Properties[kv.Key] = val.ToString();
-                    continue;
-                }
-
-                var json = JsonConvert.SerializeObject(val);
-                    
-                aiTelemetry.Properties[kv.Key] = json;
-            }
+            aiTelemetry.Properties.Merge(props);
         }
     }
 }

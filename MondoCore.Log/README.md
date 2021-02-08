@@ -83,10 +83,13 @@ By creating a scoped RequestLog you can set properties that will exist for every
         public async Task DoSomething(string name)
         {
             // This property will be added to all subsequent log calls during the lifetime of IRequestLog
-            log.SetProperty("Name", name);
+            _log.SetProperty("Name", name);
 
             try
             {
+                // Do something...
+                // ...
+
                 _log.WriteEvent("Something cool", new {Make = "Chevy", Model = "Corvette"} );
 
                 if(blah)
@@ -95,7 +98,34 @@ By creating a scoped RequestLog you can set properties that will exist for every
             catch(Exception ex)
             {
                 // The anonymous object will be logged as two properties: "Class" and "Function"
-                await log.WriteError(ex, new { Class = "CoolClass", Function = "DoSomething" } )
+                await _log.WriteError(ex, new { Class = "CoolClass", Function = "DoSomething" } )
+            }
+        }
+
+        // Nested IRequestLog
+        public async Task DoSomethingElse(string name)
+        {
+            using(var requestLog = log.NewRequest("CoolClass.DoSomethingElse))
+            {
+                // These properties will be added to all log calls within this using block (you must use the local log var)
+                requestLog.SetProperty("Name", name);
+                requestLog.SetProperty("Class", nameof(CoolClass));
+                requestLog.SetProperty("Method", nameof(DoSomethingElse));
+
+                try
+                {
+                    // Do something...
+                    // ...
+
+                    requestLog.WriteEvent("Something cool", new {Make = "Chevy", Model = "Corvette"} );
+
+                    if(blah)
+                        await requestLog.WriteError(new Exception("Data error"), Telemetry.LogSeverity.Warning)
+                }
+                catch(Exception ex)
+                {
+                    await requestLog.WriteError(ex)
+                }
             }
         }
     }

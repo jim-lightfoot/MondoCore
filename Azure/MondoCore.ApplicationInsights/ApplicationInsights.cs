@@ -37,11 +37,13 @@ namespace MondoCore.ApplicationInsights
     public class ApplicationInsights : ILog
     {
         private readonly TelemetryClient _client;
+        private readonly bool _childrenAsJson;
 
         /*************************************************************************/
-        public ApplicationInsights(TelemetryConfiguration telemetryConfiguration)
+        public ApplicationInsights(TelemetryConfiguration telemetryConfiguration, bool childrenAsJson = true)
         {
             _client = new TelemetryClient(telemetryConfiguration);
+            _childrenAsJson = childrenAsJson;
         }
 
         /*************************************************************************/
@@ -55,7 +57,7 @@ namespace MondoCore.ApplicationInsights
                 { 
                     var tel = new ExceptionTelemetry(telemetry.Exception);
                     
-                    tel.MergeProperties(telemetry);
+                    tel.MergeProperties(telemetry, _childrenAsJson);
                     tel.Message = telemetry.Exception.Message;
                     tel.SeverityLevel = (SeverityLevel)((int)telemetry.Severity);
 
@@ -70,7 +72,7 @@ namespace MondoCore.ApplicationInsights
                 { 
                     var tel = new EventTelemetry(telemetry.Message);
 
-                    tel.MergeProperties(telemetry);
+                    tel.MergeProperties(telemetry, _childrenAsJson);
 
                     SetAttributes(telemetry, tel, tel);
 
@@ -83,7 +85,7 @@ namespace MondoCore.ApplicationInsights
                 { 
                     var tel = new MetricTelemetry(telemetry.Message, telemetry.Value);
 
-                    tel.MergeProperties(telemetry);
+                    tel.MergeProperties(telemetry, _childrenAsJson);
 
                     SetAttributes(telemetry, tel, tel);
 
@@ -96,7 +98,7 @@ namespace MondoCore.ApplicationInsights
                 { 
                     var tel = new TraceTelemetry(telemetry.Message, (SeverityLevel)((int)telemetry.Severity));
 
-                    tel.MergeProperties(telemetry);
+                    tel.MergeProperties(telemetry, _childrenAsJson);
 
                     SetAttributes(telemetry, tel, tel);
 
@@ -113,7 +115,7 @@ namespace MondoCore.ApplicationInsights
                                                    telemetry.Request.ResponseCode,
                                                    telemetry.Request.Success);
 
-                    tel.MergeProperties(telemetry);
+                    tel.MergeProperties(telemetry, _childrenAsJson);
 
                     SetAttributes(telemetry, tel, tel);
 
@@ -132,6 +134,12 @@ namespace MondoCore.ApplicationInsights
         public IDisposable StartOperation(string operationName)
         {
             return new Operation(_client, operationName);
+        }
+
+        /*************************************************************************/
+        public IRequestLog NewRequest(string operationName = null, string correlationId = null)
+        {
+            throw new NotSupportedException();
         }
 
         #region Private
