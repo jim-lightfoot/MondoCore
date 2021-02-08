@@ -23,6 +23,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 
+using Newtonsoft.Json;
+
 namespace MondoCore.Common
 {
     public static class ObjectExtensions
@@ -77,12 +79,12 @@ namespace MondoCore.Common
             return result;
         }
 
-       /// <summary>
+        /// <summary>
         /// Translates an object into a string dictionary
         /// </summary>
         /// <param name="obj"></param>
         /// <returns></returns>
-        public static IDictionary<string, string> ToStringDictionary(this object obj)
+        public static IDictionary<string, string> ToStringDictionary(this object obj, bool childrenAsJson = true)
         {
             if (obj == null)
                 return null;
@@ -91,12 +93,55 @@ namespace MondoCore.Common
                 return dict;
 
             var result  = new Dictionary<string, string>();
-            var objDict = obj.ToDictionary();
 
-            foreach(var key in objDict.Keys)
-                result.Add(key, objDict[key].ToString());
+            AppendValue(result, "", obj, childrenAsJson);
 
             return result;
         }
+
+        private static void AppendValue(IDictionary<string, string> dict, string prefix, object obj, bool childrenAsJson)
+        {
+            if (obj == null)
+                return;
+
+            var objDict = obj.ToDictionary();
+
+            foreach(var key in objDict.Keys)
+            { 
+                var val = objDict[key];
+
+                if(val is DateTime dtVal)
+                {
+                    dict.Add(prefix + key, dtVal.ToString("s"));
+                    continue;
+                }
+
+                if(val is DateTimeOffset dtoVal)
+                {
+                    dict.Add(prefix + key, dtoVal.ToString("s"));
+                    continue;
+                }
+
+                if(val.GetType().IsPrimitive || val is string)
+                {
+                    dict.Add(prefix + key, val.ToString());
+                    continue;
+                }
+
+                if(childrenAsJson)
+                { 
+                    var json = JsonConvert.SerializeObject(val);
+
+                    dict.Add(prefix + key, json);
+
+                    continue;
+                }
+
+                AppendValue(dict, prefix + key + ".", val, false);
+            }
+
+            return;
+        }
+
     }
 }

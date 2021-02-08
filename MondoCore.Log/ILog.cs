@@ -33,6 +33,7 @@ namespace MondoCore.Log
     {
         Task        WriteTelemetry(Telemetry telemetry);
         IDisposable StartOperation(string operationName);
+        IRequestLog NewRequest(string operationName = null, string correlationId = null);
     }
         
     /*************************************************************************/

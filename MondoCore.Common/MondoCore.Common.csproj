@@ -11,7 +11,7 @@
     <Description>Common classes used by other MondoCore libraries</Description>
     <RepositoryType>git</RepositoryType>
     <PackageLicenseFile>LICENSE</PackageLicenseFile>
-    <Version>1.4.0</Version>
+    <Version>1.4.1</Version>
   </PropertyGroup>
 
   <ItemGroup>
@@ -26,6 +26,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
     <PackageReference Include="System.Threading.Tasks.Dataflow" Version="5.0.0" />
   </ItemGroup>
 
