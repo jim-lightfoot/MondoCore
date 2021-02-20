@@ -42,6 +42,10 @@ namespace MondoCore.Common
             _store.Clear();
         }
 
+        public byte[] this[string key] => _store[key];
+        public byte[] this[int key]    => _store.ToList()[key].Value;
+        public int    Count            => _store.Count;
+
         #region IBlobStore
 
         /****************************************************************************/

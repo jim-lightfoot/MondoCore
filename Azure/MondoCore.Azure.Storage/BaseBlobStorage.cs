@@ -25,6 +25,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 using Azure;
+using Azure.Core;
 using Azure.Storage.Blobs;
 using Azure.Storage.Blobs.Models;
 using Azure.Storage.Blobs.Specialized;
@@ -41,11 +42,11 @@ namespace MondoCore.Azure.Storage
     /// </summary>
     public abstract class BaseBlobStorage : IBlobStore
     {
-        public BaseBlobStorage(string connectionString, string blobContainerName)
+        protected BaseBlobStorage(string connectionString, string blobContainerName)
         {
             var folderParts = blobContainerName.Split('/');
 
-            this.ContainerName        = folderParts[0];
+            this.ContainerName    = folderParts[0];
             this.ConnectionString = connectionString;
 
             if(folderParts.Length > 1)
@@ -54,9 +55,20 @@ namespace MondoCore.Azure.Storage
                 this.FolderName = "";
         }
 
-        protected string ConnectionString { get; }
-        protected string ContainerName    { get; }
-        protected string FolderName       { get; }
+        protected BaseBlobStorage(Uri uri, TokenCredential credential, string path)
+        {
+            this.Uri        = uri;
+            this.Credential = credential;
+
+            if(!string.IsNullOrWhiteSpace(path))
+                this.FolderName = path.EnsureEndsWith("/");
+        }
+
+        protected string          ConnectionString  { get; }
+        protected string          ContainerName     { get; }
+        protected string          FolderName        { get; }
+        protected Uri             Uri               { get; }
+        protected TokenCredential Credential        { get; }
 
         #region IBlobStore
 
@@ -257,7 +269,7 @@ namespace MondoCore.Azure.Storage
         /// <returns>A collection of the blob ids/paths</returns>
         public async Task Enumerate(string filter, Func<IBlob, Task> fnEach, bool asynchronous = true)
         {
-            var        container = new BlobContainerClient(this.ConnectionString, this.ContainerName);
+            var        container = this.ContainerClient;
             var        pages     = container.GetBlobs(AzureBlobs.Models.BlobTraits.Metadata).AsPages();
             List<Task> tasks     = asynchronous ? new List<Task>() : null;
 
@@ -292,6 +304,17 @@ namespace MondoCore.Azure.Storage
         #endregion
 
         #region Private
+
+        protected BlobContainerClient ContainerClient
+        {
+            get
+            { 
+                if(this.Uri != null)
+                    return new BlobContainerClient(this.Uri, this.Credential);
+
+                return new BlobContainerClient(this.ConnectionString, this.ContainerName);
+            }
+        }
 
         protected abstract Task<BlobBaseClient> GetBlobClient(string blobName, bool createIfNotExists = false);
 

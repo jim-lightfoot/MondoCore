@@ -21,11 +21,12 @@ using System;
 using System.IO;
 using System.Threading.Tasks;
 
-using Azure;
+using Azure.Core;
+using Azure.Identity;
 using Azure.Storage.Blobs;
 using Azure.Storage.Blobs.Specialized;
-using AzureBlobs = Azure.Storage.Blobs;
 
+using MondoCore.Common;
 
 namespace MondoCore.Azure.Storage
 {
@@ -36,11 +37,20 @@ namespace MondoCore.Azure.Storage
     /// </summary>
     public class AzureStorage : BaseBlobStorage
     {
-        private readonly BlobContainerClient _container;
-
         public AzureStorage(string connectionString, string blobContainerName) : base(connectionString, blobContainerName)
         {
-            _container = new BlobContainerClient(this.ConnectionString, this.ContainerName);
+        }
+
+        public AzureStorage(Uri uri, TokenCredential credential, string path) : base(uri, credential, path)
+        {
+        }
+
+        public AzureStorage(Uri uri, string tenantId, string clientId, string secret, string path) : base(uri, new ClientSecretCredential(tenantId, clientId, secret), path)
+        {
+        }
+
+        public AzureStorage(Uri uri, string path) : this(uri, new ManagedIdentityCredential(), path)
+        {
         }
 
         #region IBlobStore
@@ -71,7 +81,16 @@ namespace MondoCore.Azure.Storage
 
         protected override Task<BlobBaseClient> GetBlobClient(string blobName, bool createIfNotExists = false)
         { 
-            var blob = new BlobClient(this.ConnectionString, this.ContainerName, Path.Combine(this.FolderName, blobName));
+            BlobClient blob = null;
+
+            if(this.Uri != null)
+            { 
+                var pageUri =  this.Uri.Combine(this.FolderName, blobName);
+
+                blob = new BlobClient(pageUri, this.Credential);
+            }
+            else
+                blob = new BlobClient(this.ConnectionString, this.ContainerName, Path.Combine(this.FolderName, blobName));
 
             return Task.FromResult(blob as BlobBaseClient);
         }
