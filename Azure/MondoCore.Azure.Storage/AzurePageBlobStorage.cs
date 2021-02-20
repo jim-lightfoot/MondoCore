@@ -24,7 +24,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-using Azure;
+using Azure.Core;
+using Azure.Identity;
 using Azure.Storage.Blobs;
 using Azure.Storage.Blobs.Models;
 using Azure.Storage.Blobs.Specialized;
@@ -45,6 +46,14 @@ namespace MondoCore.Azure.Storage
         internal const int MaxWrite = 1024 * 1024 * 4;
 
         public AzurePageBlobStorage(string connectionString, string blobContainerName) : base(connectionString, blobContainerName)
+        {
+        }
+
+        public AzurePageBlobStorage(Uri uri, TokenCredential credential, string path) : base(uri, credential, path)
+        {
+        }
+
+        public AzurePageBlobStorage(Uri uri, string path) : this(uri, new ManagedIdentityCredential(), path)
         {
         }
 
@@ -104,7 +113,16 @@ namespace MondoCore.Azure.Storage
 
         protected override async Task<BlobBaseClient> GetBlobClient(string blobName, bool createIfNotExists = false)
         {
-            var blob = new PageBlobClient(this.ConnectionString, this.ContainerName, Path.Combine(this.FolderName, blobName));
+            PageBlobClient blob = null;
+            
+            if(this.Uri != null)
+            { 
+                var pageUri =  this.Uri.Combine(this.FolderName, blobName);
+                
+                blob = new PageBlobClient(pageUri, this.Credential);
+            }
+            else
+                blob = new PageBlobClient(this.ConnectionString, this.ContainerName, Path.Combine(this.FolderName, blobName));
 
             if(createIfNotExists)
                 await blob.CreateIfNotExistsAsync(1024).ConfigureAwait(false);

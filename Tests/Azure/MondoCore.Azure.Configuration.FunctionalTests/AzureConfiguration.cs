@@ -14,9 +14,10 @@ namespace MondoCore.Azure.Configuration.FunctionalTests
         {
             var config = CreateConfig();
 
-            Assert.AreEqual(@"http:\\www.bedrock.us", config.Get("BedrockUrl"));
-            Assert.AreEqual("bobsyouruncle",          config.Get("BedrockClientId"));
-            Assert.AreEqual("wilmaflintstone",        config.Get("BedrockClientSecret"));
+            Assert.AreEqual("Chevy",        config.Get("Make"));
+            Assert.AreEqual("Corvette" ,    config.Get("Model"));
+            Assert.AreEqual("Black",        config.Get("Color"));
+            Assert.AreEqual("1964",         config.Get("Year"));
         }
 
         private ISettings CreateConfig(string folder = "")

@@ -86,9 +86,11 @@ namespace MondoCore.Log.UnitTests
 
             await log.WriteError(new Exception("Bob's hair is on fire"));
 
-            Assert.AreEqual(1, errors.Count);
+            Assert.AreEqual(2, errors.Count);
             Assert.AreEqual(Telemetry.TelemetryType.Error, errors[0].Type);
-            Assert.AreEqual("Bob's hair is on fire", errors[0].Exception.Message);
+            Assert.AreEqual(Telemetry.TelemetryType.Error, errors[1].Type);
+            Assert.AreEqual("Whatever", errors[0].Exception.Message);
+            Assert.AreEqual("Bob's hair is on fire", errors[1].Exception.Message);
         }
 
         [TestMethod]

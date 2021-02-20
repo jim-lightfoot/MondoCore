@@ -18,6 +18,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\..\Azure\MondoCore.Azure.Storage\MondoCore.Azure.Storage.csproj" />
+    <ProjectReference Include="..\..\..\MondoCore.Log\MondoCore.Log.csproj" />
     <ProjectReference Include="..\TestHelpers\TestHelpers.csproj" />
   </ItemGroup>
 

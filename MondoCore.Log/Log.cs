@@ -178,18 +178,17 @@ namespace MondoCore.Log
                     try
                     {
                         // Log the exception from the previously failed log
-                        if (fallBackLogger.FallbackAsError)
+                        try
                         {
-                            try
-                            {
-                                await fallBackLogger.Log.WriteError(excep).ConfigureAwait(false);
-                            }
-                            catch
-                            {
-                                // This is bad
-                            }
+                            await fallBackLogger.Log.WriteError(excep).ConfigureAwait(false);
                         }
-                        else // or write the original telemetry
+                        catch
+                        {
+                            // This is bad
+                        }
+
+                        // Write the original telemetry
+                        if(!fallBackLogger.FallbackAsError)
                             await fallBackLogger.Log.WriteTelemetry(telemetry).ConfigureAwait(false);
                     }
                     catch (Exception ex)
