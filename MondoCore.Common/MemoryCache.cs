@@ -31,11 +31,15 @@ namespace MondoCore.Common
     /// </summary>
     public class MemoryCache : ICache
     {
-        private readonly ConcurrentDictionary<string, CacheEntry> _cache = new ConcurrentDictionary<string, CacheEntry>();
+        private readonly ConcurrentKeyedQueue<string, CacheEntry> _cache = new ConcurrentKeyedQueue<string, CacheEntry>();
+        private readonly int _maxCount;
+        private readonly int _flushThreshold = 100;
 
         /****************************************************************************/
-        public MemoryCache()
+        public MemoryCache(int maxCount = 10000, int flushThreshold = 100)
         {
+            _maxCount = maxCount;
+            _flushThreshold = flushThreshold;
         }
 
         /****************************************************************************/
@@ -63,39 +67,49 @@ namespace MondoCore.Common
         /****************************************************************************/
         public Task Add(string key, object objToAdd)
         {
-            _cache[key] = new CacheEntry { Item = objToAdd };
-
-            return Task.CompletedTask;
+            return Add( new CacheEntry { Key = key, Item = objToAdd });
         }
 
         /****************************************************************************/
         public Task Add(string key, object objToAdd, DateTime dtExpires, ICacheDependency dependency = null)
         {
-            _cache[key] = new CacheEntry { Item = objToAdd, AbsoluteExpiration = dtExpires };
-
-            return Task.CompletedTask;
+            return Add( new CacheEntry { Key = key, Item = objToAdd, AbsoluteExpiration = dtExpires });
         }
 
         /****************************************************************************/
         public Task Add(string key, object objToAdd, TimeSpan tsExpires, ICacheDependency dependency = null)
         {
-            _cache[key] = new CacheEntry { Item = objToAdd, SlidingExpiration = tsExpires };
-
-            return Task.CompletedTask;
+            return Add( new CacheEntry { Key = key, Item = objToAdd, SlidingExpiration = tsExpires });
         }
                           
         /****************************************************************************/
         public Task Remove(string key)
         {
-            _cache.TryRemove(key, out CacheEntry _);
+            _cache.Remove(key);
 
             return Task.CompletedTask;
         }
 
         #region Private 
 
+        /****************************************************************************/
+        private Task Add(CacheEntry entry)
+        {
+            if(_cache.Count >= _maxCount)
+            {
+                // Too many items in cache. Remove the oldest ones
+                _cache.Dequeue(_flushThreshold);
+            }
+        
+            _cache.Enqueue(entry.Key, entry);
+
+            return Task.CompletedTask;
+        }
+
+        /****************************************************************************/        
         private class CacheEntry
         {
+            internal string    Key                { get; set; }
             internal object    Item               { get; set; }
             internal DateTime? AbsoluteExpiration { get; set; }
             internal TimeSpan? SlidingExpiration  { get; set; }

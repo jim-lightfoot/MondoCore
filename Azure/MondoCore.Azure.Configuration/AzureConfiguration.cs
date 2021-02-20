@@ -51,12 +51,11 @@ namespace MondoCore.Azure.Configuration
 
             builder.AddAzureAppConfiguration(options =>
             {
-                options.Connect(connectionString);
-
-                options.ConfigureKeyVault(kv =>
-                {
-                    kv.SetCredential(new ClientSecretCredential(tenantId, clientId, secret));
-                });
+                options.Connect(connectionString)
+                       .ConfigureKeyVault(kv =>
+                        {
+                            kv.SetCredential(new ClientSecretCredential(tenantId, clientId, secret));
+                        });
             });
 
             _config = builder.Build();

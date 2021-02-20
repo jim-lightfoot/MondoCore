@@ -15,6 +15,11 @@ namespace MondoCore.Security.Encryption.UnitTests
         private const string DataToEncrypt2 = "普通话/普通話";
         private const string DataToEncrypt3 = "أحب القراءة كثيرا";
         private const string DataToEncrypt4 = "К нам в око́шко застучи́т";
+        private const string DataToEncrypt5 = "ボブはあなたの叔父です";
+        private const string DataToEncrypt6 = "בוב הוא הדוד שלך.";
+        private const string DataToEncrypt7 = "বব আপোনাৰ খুৰা";
+        private const string DataToEncrypt8 = "बॉब अपने चाचा";
+        private const string DataToEncrypt9 = "ᐹᑉ ᐊᒃᑲᖓ";
 
         [TestMethod]
         public async Task EncryptorExtensions_EncryptDecrypt()
@@ -25,8 +30,12 @@ namespace MondoCore.Security.Encryption.UnitTests
             await TestEncryptDecrypt(encr, DataToEncrypt2);
             await TestEncryptDecrypt(encr, DataToEncrypt3);
             await TestEncryptDecrypt(encr, DataToEncrypt4);
+            await TestEncryptDecrypt(encr, DataToEncrypt5);
+            await TestEncryptDecrypt(encr, DataToEncrypt6);
+            await TestEncryptDecrypt(encr, DataToEncrypt7);
+            await TestEncryptDecrypt(encr, DataToEncrypt8);
+            await TestEncryptDecrypt(encr, DataToEncrypt9);
         }
-
 
         [TestMethod]
         public async Task EncryptorExtensions_EncryptDecrypt_expired()
