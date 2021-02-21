@@ -1,6 +1,11 @@
 # MondoCore
 
 <br>
+
+Note: All Azure projects have been moved to a separate repository : https://github.com/jim-lightfoot/MondoCore-Azure
+
+
+<br>
   
 
 ## [MondoCore.Common](MondoCore.Common/README.md)
@@ -19,20 +24,4 @@
   
 
 <br>
-
-## [MondoCore.ApplicationInsights](Azure/MondoCore.ApplicationInsights/README.md)
-  Logging to ApplicationInsights.
-  
-
-<br>
-
-## [MondoCore.Azure.Storage](Azure/MondoCore.Azure.Storage/README.md)
-  Blob storage using Azure blob storage.
-
-
-<br>
-
-## [MondoCore.Azure.Storage.Queue](Azure/MondoCore.Azure.Storage.Queue/README.md)
-  Message queue for Azure Storage queues.
-  
 
