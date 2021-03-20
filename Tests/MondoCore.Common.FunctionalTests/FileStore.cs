@@ -9,7 +9,7 @@ using MondoCore.Common;
 using System.Reflection.Metadata;
 using System.Collections.Generic;
 
-namespace MondoCore.Azure.Storage.FunctionalTests
+namespace MondoCore.Common.FunctionalTests
 {
     [TestClass]
     [TestCategory("Functional Tests")]
