@@ -17,15 +17,27 @@
  *                                                                          
  ****************************************************************************/
 
+using System;
 using System.Collections.Generic;
+using System.Linq.Expressions;
 using System.Threading.Tasks;
 
 namespace MondoCore.Data
 {
-    public interface IWriteRepository<TID>
+    /// <summary>
+    /// Provides an interface for all modification operations to a repository
+    /// </summary>
+    /// <typeparam name="TID">The type of the indentifier</typeparam>
+    /// <typeparam name="TValue">The type of the object stored in the repository</typeparam>
+    public interface IWriteRepository<TID, TValue> where TValue : IIdentifiable<TID>
     {
-        Task<object> Insert(TID id, object item);
-        Task         Update(TID id, object item);
-        Task         Delete(TID id);
-    }
+        Task<TValue> Insert(TValue item);
+        Task         Insert(IEnumerable<TValue> items);
+        
+        Task<bool>   Update(TValue item, Expression<Func<TValue, bool>> guard = null);
+        Task<long>   Update(object properties, Expression<Func<TValue, bool>> query);
+        
+        Task<bool>   Delete(TID id);
+        Task<long>   Delete(Expression<Func<TValue, bool>> guard);
+     }
 }

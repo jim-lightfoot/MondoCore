@@ -17,14 +17,33 @@
  *                                                                          
  ****************************************************************************/
 
+using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Linq.Expressions;
 using System.Threading.Tasks;
 
 namespace MondoCore.Data
 {
-    public interface IReadRepository<TID>
+    public interface IIdentifiable<TID> 
     {
-        Task<object>              Get(TID id);
-        Task<IEnumerable<object>> Get(IEnumerable<TID> ids);
+        TID Id { get; }
+    }
+
+    public interface IPartitionable<TID> : IIdentifiable<TID> 
+    {
+        string GetPartitionKey();
+    }
+
+    /// <summary>
+    /// Provides an interface for all read operations to a repository
+    /// </summary>
+    /// <typeparam name="TID">The type of the indentifier</typeparam>
+    /// <typeparam name="TValue">The type of the object stored in the repository</typeparam>
+    public interface IReadRepository<TID, TValue> : IQueryable<TValue> where TValue : IIdentifiable<TID>
+    {
+        Task<TValue>                Get(TID id);
+        IAsyncEnumerable<TValue>    Get(IEnumerable<TID> ids);
+        IAsyncEnumerable<TValue>    Get(Expression<Func<TValue, bool>> query);
     }
 }

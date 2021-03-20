@@ -1,58 +1,44 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-using System.Collections.Generic;
-using System.Linq;
-using System.IO;
-using System.Text;
-using System.Threading.Tasks;
+using System;
 
 using MondoCore.Common;
 using MondoCore.Data;
+using MondoCore.Repository.TestHelper;
 
-namespace MondoCore.Common.UnitTests
+namespace MondoCore.Data.UnitTests
 {
     [TestClass]
     [TestCategory("Unit Tests")]
-    public class MemoryRepositoryTests
+    public class MemoryRepositoryTests : RepositoryTestBase<string>
     {
+       public MemoryRepositoryTests() :
 
-        [TestMethod]
-        public async Task MemoryRepository_Get()
+           base(new MemoryDatabase(),
+                "cars",
+                ()=> Guid.NewGuid().ToString())
         {
-            var store = CreateRepository();
-
-            await store.Insert("bob", "fred");
-
-            Assert.AreEqual("fred", await store.Get("bob"));
         }
 
-        [TestMethod]
-        public async Task MemoryRepository_Get_notfound()
+        internal class MemoryDatabase : IDatabase
         {
-            var store = CreateRepository();
+            private object _repo = null;
 
-            await store.Insert("bob", "fred");
+            public IReadRepository<TID, TValue> GetRepositoryReader<TID, TValue>(string repoName, IIdentifierStrategy<TID> strategy = null) where TValue : IIdentifiable<TID>  
+            {
+                if(_repo == null)
+                    _repo = new MemoryRepository<TID, TValue>();
 
-            await Assert.ThrowsExceptionAsync<NotFoundException>( async ()=> await store.Get("george"));
-        }
+                return _repo as IReadRepository<TID, TValue>;
+            }
 
-        [TestMethod]
-        public async Task MemoryRepository_Delete()
-        {
-            var store = CreateRepository();
+            public IWriteRepository<TID, TValue> GetRepositoryWriter<TID, TValue>(string repoName, IIdentifierStrategy<TID> strategy = null) where TValue : IIdentifiable<TID> 
+            {
+                if(_repo == null)
+                    _repo = new MemoryRepository<TID, TValue>();
 
-            await store.Insert("bob", "fred");
-
-            Assert.AreEqual("fred", await store.Get("bob"));
-
-            await store.Delete("bob");
-
-            await Assert.ThrowsExceptionAsync<NotFoundException>( async ()=> await store.Get("bob"));
-        }
-
-        private MemoryRepository CreateRepository(string folder = "")
-        { 
-            return new MemoryRepository();
+                return _repo as IWriteRepository<TID, TValue>;
+            }
         }
     }
 }
