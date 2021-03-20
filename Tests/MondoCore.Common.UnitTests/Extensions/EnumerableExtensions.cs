@@ -28,9 +28,8 @@ namespace MondoCore.Common.UnitTests
                 { 
                     dict.TryAdd(item, item);
                 }
-                catch(Exception ex)
+                catch(Exception)
                 {
-                   var i = 0;
                 }
 
                 await Task.CompletedTask;
