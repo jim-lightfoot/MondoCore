@@ -27,8 +27,8 @@ namespace MondoCore.Repository.TestHelper
         protected RepositoryTestBase(IDatabase db, string repoName, Func<TID> createNewId)
         {
             _db          = db;
-            _writer      = _db.GetRepositoryWriter<TID, Automobile>(repoName, "Chevy");
             _reader      = _db.GetRepositoryReader<TID, Automobile>(repoName, "Chevy");
+            _writer      = _db.GetRepositoryWriter<TID, Automobile>(repoName, "Chevy");
             _createNewId = createNewId;
             _repoName    = repoName;
         }
@@ -36,25 +36,28 @@ namespace MondoCore.Repository.TestHelper
         [TestInitialize]
         public async Task Initialize()
         {
-            await _writer.Delete( _=> true );
+            await _writer?.Delete( _=> true );
 
             _idCollection.Clear();
 
             for(var i = 0; i < 6; ++i)
                 _idCollection.Add(_createNewId());
 
-            await _writer.Insert(new Automobile { Id = _idCollection[0], Make = "Chevy",      Color = "Blue",  Model = "Camaro",    Year = 1969 });
-            await _writer.Insert(new Automobile { Id = _idCollection[1], Make = "Pontiac",    Color = "Black", Model = "Firebird",  Year = 1972 });
-            await _writer.Insert(new Automobile { Id = _idCollection[2], Make = "Chevy",      Color = "Green", Model = "Corvette",  Year = 1964 });
-            await _writer.Insert(new Automobile { Id = _idCollection[3], Make = "Audi",       Color = "Blue",  Model = "S5",        Year = 2021 });
-            await _writer.Insert(new Automobile { Id = _idCollection[4], Make = "Studebaker", Color = "Black", Model = "Speedster", Year = 1914 });
-            await _writer.Insert(new Automobile { Id = _idCollection[5], Make = "Arrow",      Color = "Green", Model = "Glow",      Year = 1917 });
+            if(_writer != null)
+            { 
+                await _writer.Insert(new Automobile { Id = _idCollection[0], Make = "Chevy",      Color = "Blue",  Model = "Camaro",    Year = 1969 });
+                await _writer.Insert(new Automobile { Id = _idCollection[1], Make = "Pontiac",    Color = "Black", Model = "Firebird",  Year = 1972 });
+                await _writer.Insert(new Automobile { Id = _idCollection[2], Make = "Chevy",      Color = "Green", Model = "Corvette",  Year = 1964 });
+                await _writer.Insert(new Automobile { Id = _idCollection[3], Make = "Audi",       Color = "Blue",  Model = "S5",        Year = 2021 });
+                await _writer.Insert(new Automobile { Id = _idCollection[4], Make = "Studebaker", Color = "Black", Model = "Speedster", Year = 1914 });
+                await _writer.Insert(new Automobile { Id = _idCollection[5], Make = "Arrow",      Color = "Green", Model = "Glow",      Year = 1917 });
+            }
         }
 
         [TestCleanup]
         public async Task Cleanup()
         {
-            await _writer.Delete( _=> true );
+            await _writer?.Delete( _=> true );
 
             _idCollection.Clear();
         }
@@ -123,6 +126,15 @@ namespace MondoCore.Repository.TestHelper
             Assert.IsNotNull(result2);
             Assert.AreEqual(id2, result2.Id);
             Assert.AreEqual("DB9", result2.Model);
+        }
+
+        [TestMethod]
+        public async Task Reader_Get_success()
+        {
+            var id = _createNewId();
+            await _writer.Insert(new Automobile { Id = id, Make = "Chevy", Model = "Camaro" });
+
+            Assert.IsNotNull(await _reader.Get(id));
         }
 
         [TestMethod]

@@ -10,7 +10,7 @@
  *  Original Author: Jim Lightfoot                                           
  *    Creation Date: 1 Jan 2020                                              
  *                                                                           
- *   Copyright (c) 2005-2020 - Jim Lightfoot, All rights reserved            
+ *   Copyright (c) 2005-2021 - Jim Lightfoot, All rights reserved            
  *                                                                           
  *  Licensed under the MIT license:                                          
  *    http://www.opensource.org/licenses/mit-license.php                     
@@ -198,10 +198,13 @@ namespace MondoCore.Common
                 var currentVal = property.GetValue(obj);
                 object newVal = kv.Value;
 
-                if(!currentVal.GetType().IsEquivalentTo(newVal.GetType()))
-                    newVal = Convert.ChangeType(newVal, currentVal.GetType());
+                if(currentVal == null  && newVal == null)
+                    continue;
 
-                if(currentVal.Equals(newVal))
+                if(newVal != null && newVal.GetType() != property.PropertyType)
+                    newVal = Convert.ChangeType(newVal, property.PropertyType);
+
+                if(currentVal != null && currentVal.Equals(newVal))
                     continue;
 
                 try
@@ -216,6 +219,20 @@ namespace MondoCore.Common
             }
 
             return changed;
+        }
+
+        public static T1 Map<T2, T1>(this T2 obj) where T1 : class, new()
+                                                  where T2 : class
+        {
+            if (obj == null)
+                return null;
+
+            var props  = obj.ToDictionary();
+            var result = new T1();
+
+            result.SetValues(props);
+
+            return result;
         }
 
         private static void AppendValue(IDictionary<string, string> dict, string prefix, object obj, bool childrenAsJson)

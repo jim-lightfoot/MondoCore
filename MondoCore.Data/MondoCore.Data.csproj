@@ -3,7 +3,20 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.1</TargetFramework>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <PackageLicenseFile>LICENSE</PackageLicenseFile>
+    <Authors>Jim Lightfoot</Authors>
+    <Description>Interfaces and extensions for repositories (databases and collections)</Description>
+    <RepositoryUrl>https://github.com/jim-lightfoot/MondoCore</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <Version>1.0.2</Version>
   </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="..\LICENSE">
+      <Pack>True</Pack>
+      <PackagePath></PackagePath>
+    </None>
+  </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\MondoCore.Common\MondoCore.Common.csproj" />
