@@ -2,7 +2,7 @@
  *                                                                          
  *    The MondoCore Libraries  							                    
  *                                                                          
- *        Namespace: MondoCore.Common							            
+ *        Namespace: MondoCore.Data							            
  *             File: DictionaryExtensions.cs					    		        
  *        Class(es): DictionaryExtensions				         		            
  *          Purpose: Extensions for dictionaries                  
@@ -18,7 +18,6 @@
  ****************************************************************************/
 
 using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;

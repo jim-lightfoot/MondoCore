@@ -351,3 +351,4 @@ MigrationBackup/
 
 # Local config files
 localhost.json
+/Tests/MondoCore.Common.UnitTests/Test Files

@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Collections.Concurrent;
 using System.Linq;
 using System.Linq.Expressions;
-using System.Text;
 using System.Threading.Tasks;
 
 using MondoCore.Common;
@@ -12,11 +11,21 @@ namespace MondoCore.Data
 {
     public class MemoryRepository<TID, TValue> : IReadRepository<TID, TValue>, IWriteRepository<TID, TValue> where TValue : IIdentifiable<TID>
     {
-        private readonly ConcurrentDictionary<TID, TValue> _items = new ConcurrentDictionary<TID, TValue>();
+        private readonly ConcurrentDictionary<TID, Entry> _items = new ConcurrentDictionary<TID, Entry>();
+        private readonly ConcurrentQueue<Entry>           _queue = new ConcurrentQueue<Entry>();
 
-        public MemoryRepository()
+        private readonly TimeSpan? _absoluteExpiration;
+        private readonly TimeSpan? _relativeExpiration;
+        private readonly int       _maxItems;
+ 
+        public MemoryRepository(TimeSpan? absoluteExpiration = null, TimeSpan? relativeExpiration = null, int maxItems = int.MaxValue)
         {
+            _absoluteExpiration = absoluteExpiration;
+            _relativeExpiration = relativeExpiration;
+            _maxItems           = maxItems;
         }
+
+        public int DequeueCount { get; set; } = 10;
 
         #region IReadRepository
 
@@ -24,7 +33,21 @@ namespace MondoCore.Data
         {
             try
             { 
-                return Task.FromResult(_items[id]);
+                var entry = _items[id];
+
+                if(_absoluteExpiration.HasValue && (entry.Timestamp + _absoluteExpiration.Value) <= DateTime.UtcNow)
+                {
+                    RemoveEntry(entry);
+                    throw new NotFoundException("Item not found");
+                }
+
+                if(_relativeExpiration.HasValue && (entry.Timestamp + _relativeExpiration.Value) <= DateTime.UtcNow)
+                {
+                    RemoveEntry(entry);
+                    throw new NotFoundException("Item not found");
+                }
+
+                return Task.FromResult(entry.Value);
             }
             catch(KeyNotFoundException ex)
             {
@@ -33,19 +56,16 @@ namespace MondoCore.Data
         }
 
         public async IAsyncEnumerable<TValue> Get(IEnumerable<TID> ids)
-        {
-            var dict = ids.ToDictionary( id=> id, id=> id);
-            
+        {            
             foreach(var id in ids)
                 if(_items.ContainsKey(id))
-                    yield return await Task.FromResult(_items[id]);
+                    yield return await Task.FromResult(_items[id].Value);
         }
 
         public async IAsyncEnumerable<TValue> Get(Expression<Func<TValue, bool>> query)
         {
-            var fnGuard = query.Compile();
-            
-            var result = _items.Where( kv=> fnGuard(kv.Value)).Select( kv=> kv.Value );
+            var fnGuard = query.Compile();  
+            var result = _items.Where( kv=> fnGuard(kv.Value.Value)).Select( kv=> kv.Value.Value );
 
             foreach(var item in result)
                 yield return await Task.FromResult(item);
@@ -56,17 +76,17 @@ namespace MondoCore.Data
         #region IQueryable
 
         public Type             ElementType => typeof(TValue);
-        public Expression       Expression  => _items.Values.AsQueryable<TValue>().Expression;
-        public IQueryProvider   Provider    => _items.Values.AsQueryable<TValue>().Provider;
+        public Expression       Expression  => _items.Values.Select( v=> v.Value ).AsQueryable<TValue>().Expression;
+        public IQueryProvider   Provider    => _items.Values.Select( v=> v.Value ).AsQueryable<TValue>().Provider;
 
         #endregion
 
         #region IEnumerable<>
 
-        public IEnumerator<TValue> GetEnumerator() => _items.Values.GetEnumerator();
+        public IEnumerator<TValue> GetEnumerator() => _items.Values.Select( v=> v.Value ).GetEnumerator();
 
         System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
-          => _items.Values.GetEnumerator();
+          => _items.Values.Select( v=> v.Value ).GetEnumerator();
 
         #endregion
 
@@ -83,7 +103,7 @@ namespace MondoCore.Data
             if(id.Equals(default(TID)))
                 throw new ArgumentException("Item must have a valid id in to add to collection");
 
-            _items[id] = item;
+                AddEntry(id, item);
 
             return Task.FromResult(item);
         }
@@ -94,7 +114,7 @@ namespace MondoCore.Data
             { 
                 var id = item.GetValue<TID>("Id");
 
-                _items[id] = item;
+                AddEntry(id, item);
             }
 
             return Task.CompletedTask;
@@ -106,10 +126,10 @@ namespace MondoCore.Data
             var current = _items[id];
 
             if(guard != null)
-               if(!guard.Compile()(current))
+               if(!guard.Compile()(current.Value))
                    return Task.FromResult(false);
 
-            _items[id] = item;
+           AddEntry(id, item);
 
             return Task.FromResult(true);
         }
@@ -117,7 +137,7 @@ namespace MondoCore.Data
         public Task<long> Update(object properties, Expression<Func<TValue, bool>> guard)
         {
             var fnGuard = guard.Compile();
-            var matched = _items.Where( kv=> fnGuard(kv.Value));
+            var matched = _items.Where( kv=> fnGuard(kv.Value.Value));
 
             if(!matched.Any())
                 return Task.FromResult(0L);
@@ -127,7 +147,7 @@ namespace MondoCore.Data
 
             foreach(var kv in matched)
             {
-                if(kv.Value.SetValues(dProps))
+                if(kv.Value.Value.SetValues(dProps))
                     ++numUpdated;
             }
 
@@ -136,21 +156,67 @@ namespace MondoCore.Data
 
         public Task<bool> Delete(TID id)
         {
-            return Task.FromResult(_items.TryRemove(id, out TValue _));
+            return Task.FromResult(_items.TryRemove(id, out Entry _));
         }
 
         public Task<long> Delete(Expression<Func<TValue, bool>> guard)
         {
             var  fnGuard = guard.Compile();
-            var  matched = _items.Where( kv=> fnGuard(kv.Value));
+            var  matched = _items.Where( kv=> fnGuard(kv.Value.Value));
             long numDeleted = 0;
 
             foreach(var kv in matched)
-                if(_items.TryRemove(kv.Key, out TValue _))
+                if(_items.TryRemove(kv.Key, out Entry _))
                     ++numDeleted;
 
             return Task.FromResult(numDeleted);
         }
+
+        #endregion
+
+        #region Private
+
+        private class Entry
+        {
+            internal TID      Id        { get; set; }
+            internal TValue   Value     { get; set; }
+            internal DateTime Timestamp { get; set; }
+            internal bool     Deleted   { get; set; }
+        }
+
+        private void RemoveEntry(Entry entry)
+        {
+            _items.TryRemove(entry.Id, out Entry _);
+            entry.Deleted = true;
+        }
+
+        private void AddEntry(TID id, TValue item)
+        {
+            if(_items.Count >= _maxItems)
+            {
+                int count = this.DequeueCount;
+
+                // Remove a batch of items to make room for new entries
+                while(--count >= 0 && _queue.TryDequeue(out Entry dequeue))
+                {
+                    _items.TryRemove(dequeue.Id, out Entry _);
+                }
+
+                // Dequeue any items already deleted
+                while(_queue.TryPeek(out Entry dqEentry) && dqEentry.Deleted)
+                { 
+                    if(_queue.TryDequeue(out Entry _))
+                        break;
+                }
+            }
+
+            var entry = new Entry { Id = id, Value = item, Timestamp = DateTime.UtcNow };
+
+            _items[id] = entry;
+            _queue.Enqueue(entry);
+        }
+
+
 
         #endregion
     }
