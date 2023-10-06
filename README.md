@@ -4,7 +4,6 @@
 
 Note: All Azure projects have been moved to a separate repository : https://github.com/jim-lightfoot/MondoCore-Azure
 
-
 <br>
   
 
@@ -19,8 +18,9 @@ Note: All Azure projects have been moved to a separate repository : https://gith
 
 <br>
 
-## [MondoCore.Log](MondoCore.Log/README.md)
-  Classes for logging.
+
+## [MondoCore.Log](https://github.com/jim-lightfoot/MondoCore.Log/blob/master/README.md)
+  This project has been moved to it's own repository.
   
 
 <br>
