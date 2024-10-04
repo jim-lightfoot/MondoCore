@@ -36,15 +36,15 @@ namespace MondoCore.Common
         /// <param name="stream">Stream to read from</param>
         /// <param name="encoder">Text encoder. Will default to UTFEncoding</param>
         /// <returns>The resulting string</returns>
-        public static async Task<string> ReadStringAsync(this Stream stream, Encoding encoder = null)
+        public static async Task<string> ReadStringAsync(this Stream stream, Encoding? encoder = null)
         {
             encoder = encoder ?? UTF8Encoding.UTF8;
 
             if(stream is MemoryStream memStream)
             { 
-                var array = memStream.ToArray();
+                var array  = memStream.ToArray();
                 var arrLen = array.Length;
-                var str = encoder.GetString(memStream.ToArray()).SubstringBefore("\0");
+                var str    = encoder.GetString(array);
                 var atrLen = str.Length;
 
                 return str;
@@ -59,7 +59,7 @@ namespace MondoCore.Common
                 { 
                     await stream.CopyToAsync(mem).ConfigureAwait(false);
 
-                    return encoder.GetString(mem.ToArray()).SubstringBefore("\0");
+                    return encoder.GetString(mem.ToArray());
                 }
             }
             finally
@@ -76,7 +76,7 @@ namespace MondoCore.Common
         /// <param name="stream">Stream to read from</param>
         /// <param name="encoder">Text encoder. Will default to UTFEncoding</param>
         /// <returns>The resulting string</returns>
-        public static string ReadString(this Stream stream, Encoding encoder = null)
+        public static string ReadString(this Stream stream, Encoding? encoder = null)
         {
             encoder = encoder ?? UTF8Encoding.UTF8;
 
@@ -107,7 +107,7 @@ namespace MondoCore.Common
         /// <param name="data"></param>
         /// <param name="encoder">Text encoder. Will default to UTFEncoding</param>
         /// <returns></returns>
-        public static Task WriteAsync(this Stream stream, string data, Encoding encoder = null)
+        public static Task WriteAsync(this Stream stream, string data, Encoding? encoder = null)
         {
             encoder = encoder ?? UTF8Encoding.UTF8;
 
@@ -123,7 +123,7 @@ namespace MondoCore.Common
         /// <param name="stream">Stream to read from</param>
         /// <param name="encoder">Text encoder. Will default to UTFEncoding</param>
         /// <returns>The resulting string</returns>
-        public static byte[] ToArray(this Stream stream, Encoding encoder = null)
+        public static byte[] ToArray(this Stream stream, Encoding? encoder = null)
         {
             encoder = encoder ?? UTF8Encoding.UTF8;
 

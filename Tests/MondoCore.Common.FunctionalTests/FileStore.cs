@@ -8,6 +8,8 @@ using System.IO;
 using MondoCore.Common;
 using System.Reflection.Metadata;
 using System.Collections.Generic;
+using System.Reflection;
+using System;
 
 namespace MondoCore.Common.FunctionalTests
 {
@@ -15,14 +17,11 @@ namespace MondoCore.Common.FunctionalTests
     [TestCategory("Functional Tests")]
     public class FileStoreTests
     {
-        private string _container = "c:\\documents\\test";
 
         [TestMethod]
         public async Task FileStore_Put_string()
         {
             var store = CreateStorage();
-
-            await store.Delete("bob");
 
             await store.Put("bob", "fred");
 
@@ -36,8 +35,6 @@ namespace MondoCore.Common.FunctionalTests
         {
             var store = CreateStorage();
             var encoding = UTF8Encoding.UTF8;
-
-            await store.Delete("bob");
 
             using(var stream = new MemoryStream(encoding.GetBytes("fred")))
             { 
@@ -55,7 +52,6 @@ namespace MondoCore.Common.FunctionalTests
             var store = CreateStorage();
             var encoding = UTF8Encoding.UTF8;
 
-            await store.Delete("bob");
             await store.Put("bob", "fred");
 
             Assert.AreEqual("fred", encoding.GetString(await store.GetBytes("bob")));
@@ -68,7 +64,6 @@ namespace MondoCore.Common.FunctionalTests
         {
             var store = CreateStorage();
 
-            await store.Delete("bob");
             await store.Put("bob", "fred");
 
             Assert.AreEqual("fred", await store.Get("bob"));
@@ -106,6 +101,41 @@ namespace MondoCore.Common.FunctionalTests
         }
 
         [TestMethod]
+        public async Task FileStore_Get_stream()
+        {
+            var store = CreateStorage();
+
+            var uid = Guid.NewGuid().ToString();
+
+            await store.Put(uid, "fred");
+
+            using(var strm = new MemoryStream())
+            { 
+                await store.Get(uid, strm);
+
+                Assert.AreEqual("fred", await strm.ReadStringAsync());
+            }
+
+            await store.Delete(uid);
+        }
+
+        [TestMethod]
+        public async Task FileStore_OpenRead()
+        {
+            var store = CreateStorage();
+            var uid   = Guid.NewGuid().ToString();
+
+            await store.Put(uid, "fred");
+
+            using(var strm = await store.OpenRead(uid))
+            { 
+                Assert.AreEqual("fred", await strm.ReadStringAsync());
+            }
+
+            await store.Delete(uid);
+        }
+
+        [TestMethod]
         [ExpectedException(typeof(FileNotFoundException))]
         public async Task FileStore_Delete()
         {
@@ -118,8 +148,7 @@ namespace MondoCore.Common.FunctionalTests
 
             await store.Delete("bob");
 
-            await Task.Delay(500);
-
+            await Task.Delay(100);
             Assert.AreEqual("fred", await store.Get("bob"));
         }
 
@@ -127,13 +156,6 @@ namespace MondoCore.Common.FunctionalTests
         public async Task FileStore_FindAll()
         {
             var store = CreateStorage();
-
-            await store.Delete("bio.doc");
-            await store.Delete("photo.jpg");
-            await store.Delete("resume.pdf");
-            await store.Delete("portfolio.pdf");
-
-            await Task.Delay(500);
 
             await store.Put("bio.doc",       "fred");
             await store.Put("photo.jpg",     "flintstone");
@@ -159,13 +181,6 @@ namespace MondoCore.Common.FunctionalTests
         {
             var store = CreateStorage();
 
-            await store.Delete("bio.doc");
-            await store.Delete("photo.jpg");
-            await store.Delete("resume.pdf");
-            await store.Delete("portfolio.pdf");
-
-            await Task.Delay(500);
-
             await store.Put("bio.doc",       "fred");
             await store.Put("photo.jpg",     "flintstone");
             await store.Put("resume.pdf",    "bedrock");
@@ -190,17 +205,10 @@ namespace MondoCore.Common.FunctionalTests
         {
             var store = CreateStorage();
 
-            await store.Delete("docs\\bio.doc");
-            await store.Delete("photos\\photo.jpg");
-            await store.Delete("resumes\\resume.pdf");
-            await store.Delete("stuff\\portfolio.pdf");
-
-            await Task.Delay(500);
-
-            await store.Put("docs\\bio.doc",       "fred");
-            await store.Put("photos\\photo.jpg",     "flintstone");
-            await store.Put("resumes\\resume.pdf",    "bedrock");
-            await store.Put("stuff\\portfolio.pdf", "stuff");
+            await store.Put("docs/bio.doc",       "fred");
+            await store.Put("photos/photo.jpg",     "flintstone");
+            await store.Put("resumes/resume.pdf",    "bedrock");
+            await store.Put("stuff/portfolio.pdf", "stuff");
 
             var result = new List<string>();
 
@@ -228,22 +236,14 @@ namespace MondoCore.Common.FunctionalTests
         [TestMethod]
         public async Task FileStore_Enumerate_folder()
         {
-            var store = CreateStorage("\\cars\\chevy");
-            var store2 = CreateStorage("\\cars\\pontiac");
+            var store  = CreateStorage("cars\\chevy");
+            var store2 = CreateStorage("cars\\pontiac");
 
-            await store.Delete("docs\\bio.doc");
-            await store.Delete("photos\\photo.jpg");
-            await store.Delete("resumes\\resume.pdf");
-            await store.Delete("stuff\\portfolio.pdf");
-            await store2.Delete("firebird.tiff");
-
-            await Task.Delay(500);
             await store2.Put("firebird.tiff",       "fred");
-
-            await store.Put("docs\\bio.doc",       "fred");
-            await store.Put("photos\\photo.jpg",     "flintstone");
-            await store.Put("resumes\\resume.pdf",    "bedrock");
-            await store.Put("stuff\\portfolio.pdf", "stuff");
+            await store.Put("docs/bio.doc",       "fred");
+            await store.Put("photos/photo.jpg",     "flintstone");
+            await store.Put("resumes/resume.pdf",    "bedrock");
+            await store.Put("stuff/portfolio.pdf", "stuff");
 
             var result = new List<string>();
 
@@ -262,16 +262,20 @@ namespace MondoCore.Common.FunctionalTests
             Assert.IsTrue(result.Contains("resumes\\resume.pdf"));
             Assert.IsTrue(result.Contains("stuff\\portfolio.pdf"));
 
-            await store.Delete("docs\\bio.doc");
-            await store.Delete("photos\\photo.jpg");
-            await store.Delete("resumes\\resume.pdf");
-            await store.Delete("stuff\\portfolio.pdf");
+            await store.Delete("docs/bio.doc");
+            await store.Delete("photos/photo.jpg");
+            await store.Delete("resumes/resume.pdf");
+            await store.Delete("stuff/portfolio.pdf");
             await store2.Delete("firebird.tiff");
         }
 
         private IBlobStore CreateStorage(string folder = "")
         { 
-            return new FileStore(_container + folder);
+            var uid        = Guid.NewGuid().ToString();
+            var path       = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location).SubstringBefore("\\bin").Replace("/", "\\");
+            var folderPath = Path.Combine(path, "TestFiles", uid, folder);
+
+            return new FileStore(folderPath);
         }
     }
 }
