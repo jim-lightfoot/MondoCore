@@ -15,7 +15,7 @@ namespace MondoCore.Common.UnitTests
         [TestMethod]
         public async Task StreamExtensions_WriteAsync_string()
         {
-            var input = new MemoryStream();
+            using var input = new MemoryStream();
 
             await input.WriteAsync(data);
 
@@ -27,7 +27,7 @@ namespace MondoCore.Common.UnitTests
         [TestMethod]
         public async Task StreamExtensions_ReadString()
         {
-            var input = new MemoryStream();
+            using var input = new MemoryStream();
 
             await input.WriteAsync(data);
 
@@ -39,8 +39,8 @@ namespace MondoCore.Common.UnitTests
         [TestMethod]
         public async Task StreamExtensions_WriteAsync_stream()
         {
-            var input = new MemoryStream();
-            var output = new MemoryStream();
+            using var input = new MemoryStream();
+            using var output = new MemoryStream();
 
             // Initialize input with some data
             await input.WriteAsync(data);
@@ -57,8 +57,8 @@ namespace MondoCore.Common.UnitTests
         [TestMethod]
         public async Task StreamExtensions_WriteAsync_stream_2()
         {
-            var input = new MemoryStream();
-            var output = new MemoryStream();
+            using var input = new MemoryStream();
+            using var output = new MemoryStream();
 
             // Initialize input with some data (> buffer size which is 64k)
             for(var i = 0; i < 600; ++i)

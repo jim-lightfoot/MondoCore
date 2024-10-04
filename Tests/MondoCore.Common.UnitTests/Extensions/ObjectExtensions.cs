@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 
 using Newtonsoft.Json;
+using System.Linq;
 
 namespace MondoCore.Common.UnitTests
 {
@@ -12,6 +13,8 @@ namespace MondoCore.Common.UnitTests
     [TestCategory("Unit Tests")]
     public class ObjectExtensionsTests
     {
+        #region ToDictionary 
+
         [TestMethod]
         public void ObjectExtensions_ToDictionary_null()
         {
@@ -66,7 +69,6 @@ namespace MondoCore.Common.UnitTests
             Assert.AreEqual(1969, dict["Year"]);
         }
 
-
         [TestMethod]
         public void ObjectExtensions_ToDictionary_types()
         {
@@ -79,7 +81,79 @@ namespace MondoCore.Common.UnitTests
             Assert.AreEqual(1969, dict["Year"]);
         }
 
-       [TestMethod]
+        #endregion
+
+        #region ToReadOnlyDictionary 
+
+        [TestMethod]
+        public void ObjectExtensions_ToReadOnlyDictionary_null()
+        {
+            object src  = null;
+            var dict = src.ToReadOnlyDictionary();
+
+            Assert.IsNull(dict);
+        }
+
+        [TestMethod]
+        public void ObjectExtensions_ToReadOnlyDictionary_sametype()
+        {
+            var src  = new Dictionary<string, object> { {"Color", "red" }, { "Make", "Chevy" } };
+            var dict = src.ToReadOnlyDictionary();
+
+            Assert.AreEqual(2, dict.Count);
+            Assert.AreEqual("red", dict["Color"]);
+            Assert.AreEqual("Chevy", dict["Make"]);
+        }
+
+        [TestMethod]
+        public void ObjectExtensions_ToReadOnlyDictionary_diff_dict_type()
+        {
+            var src  = new Dictionary<string, string> { {"Color", "red" }, { "Make", "Chevy" } };
+            var dict = src.ToReadOnlyDictionary();
+
+            Assert.AreEqual(2, dict.Count);
+            Assert.AreEqual("red", dict["Color"]);
+            Assert.AreEqual("Chevy", dict["Make"]);
+        }
+
+        [TestMethod]
+        public void ObjectExtensions_ToReadOnlyDictionary_diff_dict_type2()
+        {
+            var src  = new Dictionary<string, Automobile> { {"Chevy", new Automobile { Model = "Camaro" }  }, { "Pontiac", new Automobile { Model = "Firebird" } } };
+            var dict = src.ToReadOnlyDictionary();
+
+            Assert.AreEqual(2, dict.Count);
+            Assert.AreEqual("Camaro", (dict["Chevy"] as Automobile).Model);
+            Assert.AreEqual("Firebird", (dict["Pontiac"] as Automobile).Model);
+        }
+
+        [TestMethod]
+        public void ObjectExtensions_ToReadOnlyDictionary_object()
+        {
+            var src  = new { Make = "Chevy", Model = "Camaro" , Year = 1969 };
+            var dict = src.ToReadOnlyDictionary();
+
+            Assert.AreEqual(3, dict.Count);
+            Assert.AreEqual("Chevy", dict["Make"]);
+            Assert.AreEqual("Camaro", dict["Model"]);
+            Assert.AreEqual(1969, dict["Year"]);
+        }
+
+        [TestMethod]
+        public void ObjectExtensions_ToReadOnlyDictionary_types()
+        {
+            var src  = new Automobile { Make = "Chevy", Model = "Camaro" , Year = 1969 };
+            var dict = src.ToReadOnlyDictionary();
+
+            Assert.AreEqual(3, dict.Count);
+            Assert.AreEqual("Chevy", dict["Make"]);
+            Assert.AreEqual("Camaro", dict["Model"]);
+            Assert.AreEqual(1969, dict["Year"]);
+        }
+
+        #endregion
+
+        [TestMethod]
         public void ObjectExtensions_ToStringDictionary_json()
         {
             var src  = new Dictionary<string, Automobile> { {"Chevy", new Automobile { Model = "Camaro" }  }, { "Pontiac", new Automobile { Model = "Firebird" } } };
@@ -163,6 +237,25 @@ namespace MondoCore.Common.UnitTests
 
            Assert.AreEqual("Purple", car2.Color);
            Assert.AreEqual(1965, car2.Year);
+        }
+
+        [TestMethod]
+        public void ObjectExtensions_GetProperties_success()
+        {
+            var car1  = new Automobile { Make = "Chevy", Model = "Camaro", Color = "Blue", Year = 1969 };
+            var props = car1.GetProperties().ToList();
+
+            Assert.AreEqual(4, props.Count);
+
+            Assert.AreEqual("Make",  props[0].Name);
+            Assert.AreEqual("Model",  props[1].Name);
+            Assert.AreEqual("Color",  props[2].Name);
+            Assert.AreEqual("Year",   props[3].Name);
+                                      
+            Assert.AreEqual("Chevy",  props[0].Value);
+            Assert.AreEqual("Camaro", props[1].Value);
+            Assert.AreEqual("Blue",   props[2].Value);
+            Assert.AreEqual(1969,     props[3].Value);
         }
 
         [TestMethod]

@@ -10,7 +10,7 @@
  *  Original Author: Jim Lightfoot                                           
  *    Creation Date: 1 Jan 2020                                              
  *                                                                           
- *   Copyright (c) 2005-2021 - Jim Lightfoot, All rights reserved            
+ *   Copyright (c) 2005-2024 - Jim Lightfoot, All rights reserved            
  *                                                                           
  *  Licensed under the MIT license:                                          
  *    http://www.opensource.org/licenses/mit-license.php                     
@@ -56,23 +56,84 @@ namespace MondoCore.Common
             }
             else
             {
-                // Get public and instance properties only
-                var properties = obj.GetType().GetProperties(BindingFlags.Public | BindingFlags.Instance).Where( p=> p.CanRead );
+                var properties = obj.GetProperties();
 
                 foreach(var property in properties)
                 {
-                    try
-                    { 
-                        var value = property.GetGetMethod().Invoke(obj, null);
+                    result.Add(property.Name, property.Value);
+                }
+            }
 
-                        // Add property name and value to dictionary
-                        if (value != null)
-                            result.Add(property.Name, value);
-                    }
-                    catch
-                    {
-                        // Just ignore it
-                    }
+            return result;
+        }
+
+        /// <summary>
+        /// Creates a enumerable from the public properties of an object
+        /// </summary>
+        /// <param name="obj"></param>
+        /// <returns>An enumerable to iterate over the list of properties</returns>
+        public static IEnumerable<(string Name, object Value)> GetProperties(this object obj)
+        {
+            // Get public and instance properties only
+            var properties = obj.GetType().GetProperties(BindingFlags.Public | BindingFlags.Instance).Where( p=> p.CanRead );
+
+            foreach(var property in properties)
+            {
+                object value = null;
+
+                try
+                { 
+                    value = property.GetGetMethod().Invoke(obj, null);
+                }
+                catch
+                { 
+                    // Just ignore it
+                }
+
+                // Add property name and value to dictionary
+                if (value != null)
+                    yield return (property.Name, value);
+            }
+        }
+
+        /// <summary>
+        /// Translates an object into a dictionary
+        /// </summary>
+        /// <param name="obj"></param>
+        /// <returns></returns>
+        public static IReadOnlyDictionary<string, object> ToReadOnlyDictionary(this object obj)
+        {
+            if (obj == null)
+                return null;
+
+            if (obj is IReadOnlyDictionary<string, object> dict)
+                return dict;
+
+            if (obj is IDictionary<string, object> sdict)
+                return new GenericReadOnlyDictionaryWrapper<object>(sdict);
+
+            if (obj is IDictionary<string, string> sdict2)
+                return new GenericReadOnlyDictionaryWrapper<string>(sdict2);
+
+            if(obj is IDictionary dict2)
+            {
+                return new NonGenericReadOnlyDictionaryWrapper(dict2);
+            }
+            
+            var result = new Dictionary<string, object>();
+
+            if(obj is IEnumerable list)
+            {
+                foreach(var val in list)
+                    result.Add(val.ToString(), val);
+            }
+            else
+            {
+                var properties = obj.GetProperties();
+
+                foreach(var property in properties)
+                {
+                    result.Add(property.Name, property.Value);
                 }
             }
 
