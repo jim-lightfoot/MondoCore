@@ -48,7 +48,7 @@ namespace MondoCore.Common
         /// <returns></returns>
         public static async Task<T> Get<T>(this ICache cache, string key, Func<Task<T>> fnCreate, Func<Exception, Task> onError = null, DateTime? dtExpires = null, TimeSpan? tsExpires = null, ICacheDependency dependency = null)
         {
-            object obj = null;
+            object? obj = null;
             
             try
             {
@@ -59,7 +59,7 @@ namespace MondoCore.Common
                 // Not in cache or other retrieval error
             }
 
-            T tobj = (T)obj;
+            T? tobj = (T?)obj;
 
             if(obj == null)
             { 
@@ -71,11 +71,11 @@ namespace MondoCore.Common
                     try
                     { 
                         if(dtExpires != null)
-                            await cache.Add(key, tobj, dtExpires.Value, dependency);
+                            await cache.Add(key, tobj!, dtExpires.Value, dependency);
                         else if(tsExpires != null)
-                            await cache.Add(key, tobj, tsExpires.Value, dependency);
+                            await cache.Add(key, tobj!, tsExpires.Value, dependency);
                         else
-                            await cache.Add(key, tobj);
+                            await cache.Add(key, tobj!);
                     }
                     catch(Exception ex)
                     {
@@ -86,7 +86,7 @@ namespace MondoCore.Common
                 }).ConfigureAwait(false);
             }
 
-            return tobj;
+            return tobj!;
         }
     }
 }

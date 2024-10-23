@@ -22,6 +22,8 @@ using System.Collections.Generic;
 using System.Collections.Concurrent;
 using System.Threading.Tasks;
 
+using MondoCore.Collections.Concurrent;
+
 namespace MondoCore.Common
 {
     /****************************************************************************/
@@ -31,7 +33,7 @@ namespace MondoCore.Common
     /// </summary>
     public class MemoryCache : ICache
     {
-        private readonly ConcurrentKeyedQueue<string, CacheEntry> _cache = new ConcurrentKeyedQueue<string, CacheEntry>();
+        private readonly ConcurrentKeyedQueue<string, CacheEntry> _cache = new();
         private readonly int _maxCount;
         private readonly int _flushThreshold = 100;
 

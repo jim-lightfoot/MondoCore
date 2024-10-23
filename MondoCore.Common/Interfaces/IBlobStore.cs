@@ -10,7 +10,7 @@
  *  Original Author: Jim Lightfoot                                           
  *    Creation Date: 29 Nov 2015                                             
  *                                                                           
- *   Copyright (c) 2015-2020 - Jim Lightfoot, All rights reserved            
+ *   Copyright (c) 2015-2024 - Jim Lightfoot, All rights reserved            
  *                                                                           
  *  Licensed under the MIT license:                                          
  *    http://www.opensource.org/licenses/mit-license.php                     
