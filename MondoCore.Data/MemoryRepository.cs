@@ -5,6 +5,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
 
+using MondoCore.Collections;
 using MondoCore.Common;
 
 namespace MondoCore.Data
@@ -101,7 +102,7 @@ namespace MondoCore.Data
             var id = item.GetValue<TID>("Id");
 
             if(id.Equals(default(TID)))
-                throw new ArgumentException("Item must have a valid id in to add to collection");
+                throw new ArgumentException("Item must have a valid id to add to collection");
 
                 AddEntry(id, item);
 

@@ -18,148 +18,16 @@
  ****************************************************************************/
 
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
 
 using Newtonsoft.Json;
+using MondoCore.Collections;
 
 namespace MondoCore.Common
 {
     public static class ObjectExtensions
     {
-        /// <summary>
-        /// Translates an object into a dictionary
-        /// </summary>
-        /// <param name="obj"></param>
-        /// <returns></returns>
-        public static IDictionary<string, object> ToDictionary(this object obj)
-        {
-            if (obj == null)
-                return null;
-
-            if (obj is IDictionary<string, object> dict)
-                return dict;
-
-            var result = new Dictionary<string, object>();
-
-            if(obj is IDictionary dict2)
-            {
-                foreach(var key in dict2.Keys)
-                    result.Add(key.ToString(), dict2[key]);
-            }
-            else if(obj is IEnumerable list)
-            {
-                foreach(var val in list)
-                    result.Add(val.ToString(), val);
-            }
-            else
-            {
-                var properties = obj.GetProperties();
-
-                foreach(var property in properties)
-                {
-                    result.Add(property.Name, property.Value);
-                }
-            }
-
-            return result;
-        }
-
-        /// <summary>
-        /// Creates a enumerable from the public properties of an object
-        /// </summary>
-        /// <param name="obj"></param>
-        /// <returns>An enumerable to iterate over the list of properties</returns>
-        public static IEnumerable<(string Name, object Value)> GetProperties(this object obj)
-        {
-            // Get public and instance properties only
-            var properties = obj.GetType().GetProperties(BindingFlags.Public | BindingFlags.Instance).Where( p=> p.CanRead );
-
-            foreach(var property in properties)
-            {
-                object value = null;
-
-                try
-                { 
-                    value = property.GetGetMethod().Invoke(obj, null);
-                }
-                catch
-                { 
-                    // Just ignore it
-                }
-
-                // Add property name and value to dictionary
-                if (value != null)
-                    yield return (property.Name, value);
-            }
-        }
-
-        /// <summary>
-        /// Translates an object into a dictionary
-        /// </summary>
-        /// <param name="obj"></param>
-        /// <returns></returns>
-        public static IReadOnlyDictionary<string, object> ToReadOnlyDictionary(this object obj)
-        {
-            if (obj == null)
-                return null;
-
-            if (obj is IReadOnlyDictionary<string, object> dict)
-                return dict;
-
-            if (obj is IDictionary<string, object> sdict)
-                return new GenericReadOnlyDictionaryWrapper<object>(sdict);
-
-            if (obj is IDictionary<string, string> sdict2)
-                return new GenericReadOnlyDictionaryWrapper<string>(sdict2);
-
-            if(obj is IDictionary dict2)
-            {
-                return new NonGenericReadOnlyDictionaryWrapper(dict2);
-            }
-            
-            var result = new Dictionary<string, object>();
-
-            if(obj is IEnumerable list)
-            {
-                foreach(var val in list)
-                    result.Add(val.ToString(), val);
-            }
-            else
-            {
-                var properties = obj.GetProperties();
-
-                foreach(var property in properties)
-                {
-                    result.Add(property.Name, property.Value);
-                }
-            }
-
-            return result;
-        }
-
-        /// <summary>
-        /// Translates an object into a string dictionary
-        /// </summary>
-        /// <param name="obj"></param>
-        /// <returns></returns>
-        public static IDictionary<string, string> ToStringDictionary(this object obj, bool childrenAsJson = true)
-        {
-            if (obj == null)
-                return null;
-
-            if (obj is IDictionary<string, string> dict)
-                return dict;
-
-            var result  = new Dictionary<string, string>();
-
-            AppendValue(result, "", obj, childrenAsJson);
-
-            return result;
-        }
-
         /// <summary>
         /// Set the value of a named property
         /// </summary>
@@ -200,7 +68,7 @@ namespace MondoCore.Common
             var property = type.GetProperty(propertyName);
 
             if(property == null)
-                return default(T);
+                return default;
 
             var val = property.GetValue(obj);
 
@@ -224,7 +92,7 @@ namespace MondoCore.Common
             var property = type.GetProperty(propertyName);
 
             if(property == null)
-                return default(T);
+                return default;
 
             var val = property.GetValue(obj);
 
